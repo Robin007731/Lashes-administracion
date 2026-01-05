@@ -7,45 +7,105 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --glass: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --accent: #25D366; --gold: gold; }
-        body { margin: 0; font-family: 'Montserrat', sans-serif; background: #000 url('200025.jpg') center/cover fixed; color: white; }
-        .nav { display: flex; justify-content: center; gap: 20px; padding: 20px; background: rgba(0,0,0,0.9); position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--glass-border); }
-        .tab-btn { background: none; border: none; color: white; opacity: 0.5; cursor: pointer; font-weight: 700; text-transform: uppercase; padding: 10px; }
+        :root { 
+            --glass: rgba(255, 255, 255, 0.1); 
+            --glass-border: rgba(255, 255, 255, 0.2); 
+            --accent: #25D366; 
+            --gold: #FFD700; 
+        }
+
+        body { 
+            margin: 0; 
+            font-family: 'Montserrat', sans-serif; 
+            background: #000 url('200025.jpg') center/cover fixed; 
+            color: white; 
+        }
+
+        /* Navegación */
+        .nav { 
+            display: flex; justify-content: center; gap: 20px; 
+            padding: 20px; background: rgba(0,0,0,0.9); 
+            position: fixed; top: 0; width: 100%; z-index: 1000; 
+            border-bottom: 1px solid var(--glass-border); 
+        }
+        .tab-btn { 
+            background: none; border: none; color: white; opacity: 0.5; 
+            cursor: pointer; font-weight: 700; text-transform: uppercase; 
+            padding: 10px; transition: 0.3s;
+        }
         .tab-btn.active { opacity: 1; border-bottom: 2px solid white; }
+
         .container { max-width: 500px; margin: 100px auto 50px; padding: 20px; }
-        .card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; margin-bottom: 20px; position: relative; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; text-transform: uppercase; }
-        .btn-save { background: rgba(255,255,255,0.2); color: white; margin-top: 10px; font-size: 0.7rem; border: 1px solid white; }
-        .btn-publish { background: var(--accent); color: black; margin-bottom: 20px; box-shadow: 0 0 15px var(--accent); }
+
+        /* Tarjetas */
+        .card { 
+            background: var(--glass); backdrop-filter: blur(20px); 
+            border: 1px solid var(--glass-border); padding: 20px; 
+            border-radius: 15px; margin-bottom: 20px; position: relative; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        input { 
+            width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; 
+            border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); 
+            color: white; box-sizing: border-box; font-family: 'Montserrat';
+        }
+
+        .btn-main { 
+            width: 100%; padding: 15px; border-radius: 10px; border: none; 
+            font-weight: 700; cursor: pointer; text-transform: uppercase; 
+            transition: 0.2s;
+        }
+        
+        .btn-save { background: rgba(255,255,255,0.15); color: white; margin-top: 10px; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.3); }
+        .btn-save:hover { background: rgba(255,255,255,0.25); }
+
+        .btn-publish { 
+            background: var(--accent); color: black; margin-bottom: 30px; 
+            box-shadow: 0 0 20px rgba(37, 211, 102, 0.4); font-size: 1rem;
+        }
+        .btn-publish:active { transform: scale(0.95); }
+
         .btn-add { background: white; color: black; margin-bottom: 10px; }
-        .btn-del { position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; z-index: 10; font-weight: bold;}
+        
+        .btn-del { 
+            position: absolute; top: 10px; right: 10px; background: #ff4444; 
+            color: white; border: none; border-radius: 50%; width: 28px; height: 28px; 
+            cursor: pointer; z-index: 10; font-weight: bold; font-size: 1.1rem;
+        }
+
         .hidden { display: none !important; }
-        .reserva { border-left: 4px solid var(--accent); }
+        .reserva { border-left: 5px solid var(--accent); }
+        
+        label { font-size: 0.7rem; color: var(--gold); letter-spacing: 1px; font-weight: 700; }
     </style>
 </head>
 <body>
 
 <div class="nav">
-    <button class="tab-btn active" onclick="showTab('servicios')">Servicios</button>
-    <button class="tab-btn" onclick="showTab('agenda')">Agenda</button>
+    <button id="btn-tab-servicios" class="tab-btn active" onclick="showTab('servicios')">Servicios</button>
+    <button id="btn-tab-agenda" class="tab-btn" onclick="showTab('agenda')">Agenda</button>
 </div>
 
 <div id="tab-servicios" class="container">
+    
     <div class="card" style="border: 1px solid var(--gold);">
-        <label style="font-size: 0.7rem; color: var(--gold);">NOMBRE DE TU NEGOCIO</label>
+        <label>NOMBRE DE TU ESTUDIO</label>
         <input type="text" id="app-name-input" placeholder="Ej: LASHISTA STUDIO">
-        <button class="btn-main" style="background: var(--gold); color: black; font-size: 0.7rem; padding: 10px;" onclick="saveAppName()">ACTUALIZAR NOMBRE</button>
+        <button class="btn-main" style="background: var(--gold); color: black; font-size: 0.7rem; padding: 10px; margin-top: 5px;" onclick="saveAppName()">ACTUALIZAR NOMBRE</button>
     </div>
 
-    <button class="btn-main btn-publish" onclick="publicarAhora()">🚀 PUBLICAR EN LA WEB</button>
+    <button class="btn-main btn-publish" onclick="publicarAhora()">
+        <i class="fas fa-rocket"></i> PUBLICAR CAMBIOS EN LA WEB
+    </button>
     
     <button class="btn-main btn-add" onclick="nuevoS()">+ AGREGAR NUEVO SERVICIO</button>
+    
     <div id="lista-precios"></div>
 </div>
 
 <div id="tab-agenda" class="container hidden">
-    <h3 style="text-align: center; letter-spacing: 2px;">PRÓXIMAS CLIENTAS</h3>
+    <h3 style="text-align: center; letter-spacing: 3px; font-weight: 300;">CITAS PROGRAMADAS</h3>
     <div id="lista-reservas"></div>
 </div>
 
@@ -53,7 +113,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    const config = {
+    const firebaseConfig = {
         apiKey: "AIzaSyAqJHNrx8iuTsXrAsRmP9wl4xUB78l9E8w",
         authDomain: "lashista-12f5f.firebaseapp.com",
         databaseURL: "https://lashista-12f5f-default-rtdb.firebaseio.com",
@@ -63,68 +123,121 @@
         appId: "1:397683764876:web:96f4f8421e4b24f9e715a9"
     };
 
-    const app = initializeApp(config);
+    const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     let borradores = [];
 
+    // --- CAMBIO DE PESTAÑAS ---
     window.showTab = (t) => {
         document.getElementById('tab-servicios').classList.add('hidden');
         document.getElementById('tab-agenda').classList.add('hidden');
-        document.getElementById('tab-'+t).classList.remove('hidden');
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + t).classList.remove('hidden');
+        
+        document.getElementById('btn-tab-servicios').classList.remove('active');
+        document.getElementById('btn-tab-agenda').classList.remove('active');
+        document.getElementById('btn-tab-' + t).classList.add('active');
     };
 
-    // 1. Manejo del Nombre
+    // --- 1. GESTIÓN DEL NOMBRE (CONFIG) ---
     onValue(ref(db, 'config/appName'), (snap) => {
         const name = snap.val() || "LASHISTA";
         document.getElementById('app-name-input').value = name;
         document.getElementById('admin-title').innerText = "ADMIN | " + name;
     });
-    window.saveAppName = () => set(ref(db, 'config/appName'), document.getElementById('app-name-input').value);
 
-    // 2. Manejo de Servicios (Borrador)
+    window.saveAppName = () => {
+        const newName = document.getElementById('app-name-input').value;
+        set(ref(db, 'config/appName'), newName).then(() => alert("Nombre de la aplicación actualizado."));
+    };
+
+    // --- 2. GESTIÓN DE SERVICIOS (BORRADORES) ---
     onValue(ref(db, 'borrador_precios'), (snap) => {
         borradores = snap.val() || [];
         const div = document.getElementById('lista-precios');
         div.innerHTML = "";
+        
         borradores.forEach((s, i) => {
-            div.innerHTML += `
-                <div class="card">
-                    <button class="btn-del" onclick="delS(${i})">×</button>
-                    <input type="text" value="${s.n}" placeholder="Nombre" oninput="borradores[${i}].n=this.value">
-                    <input type="number" value="${s.p}" placeholder="Precio" oninput="borradores[${i}].p=this.value">
-                    <button class="btn-main btn-save" onclick="saveBorrador()">GUARDAR CAMBIO LOCAL</button>
-                </div>`;
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <button class="btn-del">×</button>
+                <label>NOMBRE DEL SERVICIO</label>
+                <input type="text" value="${s.n}" placeholder="Ej: Extensiones Clásicas" oninput="window.updateBorrador(${i}, 'n', this.value)">
+                <label>PRECIO ($)</label>
+                <input type="number" value="${s.p}" placeholder="0" oninput="window.updateBorrador(${i}, 'p', this.value)">
+                <button class="btn-main btn-save" onclick="window.saveBorrador()">GUARDAR CAMBIOS LOCALES</button>
+            `;
+            
+            card.querySelector('.btn-del').onclick = () => {
+                if(confirm("¿Eliminar este servicio del borrador?")) {
+                    borradores.splice(i, 1);
+                    window.saveBorrador();
+                }
+            };
+            
+            div.appendChild(card);
         });
     });
 
-    window.saveBorrador = () => set(ref(db, 'borrador_precios'), borradores);
-    window.nuevoS = () => { borradores.push({n:'', p:0}); window.saveBorrador(); };
-    window.delS = (i) => { if(confirm("¿Borrar?")) { borradores.splice(i,1); window.saveBorrador(); } };
+    window.updateBorrador = (index, campo, valor) => {
+        borradores[index][campo] = valor;
+    };
 
-    // 3. LA CLAVE: PUBLICAR
+    window.saveBorrador = () => {
+        set(ref(db, 'borrador_precios'), borradores);
+    };
+
+    window.nuevoS = () => {
+        borradores.push({ n: 'Nuevo Servicio', p: 0 });
+        window.saveBorrador();
+    };
+
+    // --- 3. PUBLICAR (Pasar borrador a público) ---
     window.publicarAhora = () => {
-        if(confirm("¿Quieres que los clientes vean estos productos y precios ahora mismo?")) {
+        if(confirm("¿Estás segura? Los clientes verán estos cambios inmediatamente en la web.")) {
             set(ref(db, 'precios_publicos'), borradores).then(() => {
-                alert("¡WEB ACTUALIZADA EXITOSAMENTE!");
+                alert("🚀 ¡WEB ACTUALIZADA! Tus clientes ya ven los nuevos precios.");
             });
         }
     };
 
-    // 4. Agenda
+    // --- 4. AGENDA (BORRAR FUNCIONAL) ---
     onValue(ref(db, 'reservas'), (snap) => {
         const data = snap.val();
         const cont = document.getElementById('lista-reservas');
-        cont.innerHTML = data ? "" : "<p style='text-align:center;'>Sin reservas.</p>";
-        if(data) Object.keys(data).reverse().forEach(key => {
-            const r = data[key];
-            const card = document.createElement('div');
-            card.className = 'card reserva';
-            card.innerHTML = `<button class="btn-del">×</button><b>${r.nombre}</b><br><span>${r.servicio} ($${r.precio})</span><br><span style="color:var(--accent)">${r.fecha} - ${r.hora}hs</span><br><a href="https://wa.me/${r.tel}" target="_blank" style="color:white; text-decoration:none; font-size:0.8rem; border:1px solid white; padding:5px; border-radius:5px; display:inline-block; margin-top:10px;">WhatsApp</a>`;
-            card.querySelector('.btn-del').onclick = () => { if(confirm("¿Borrar?")) remove(ref(db, 'reservas/' + key)); };
-            cont.appendChild(card);
-        });
+        cont.innerHTML = data ? "" : "<div style='text-align:center; opacity:0.5; margin-top:50px;'>No tienes reservas pendientes.</div>";
+        
+        if(data) {
+            Object.keys(data).reverse().forEach(key => {
+                const r = data[key];
+                const card = document.createElement('div');
+                card.className = 'card reserva';
+                card.innerHTML = `
+                    <button class="btn-del">×</button>
+                    <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 5px;">${r.nombre}</div>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">
+                        Servicio: <b>${r.servicio}</b> ($${r.precio})<br>
+                        Fecha: <b style="color:var(--accent)">${r.fecha}</b><br>
+                        Hora: <b style="color:var(--accent)">${r.hora}hs</b>
+                    </div>
+                    <a href="https://wa.me/${r.tel.replace(/\D/g,'')}" target="_blank" 
+                       style="display: block; text-align: center; background: #25D366; color: black; text-decoration: none; 
+                       padding: 10px; border-radius: 8px; margin-top: 15px; font-weight: 700; font-size: 0.8rem;">
+                       <i class="fab fa-whatsapp"></i> CONTACTAR POR WHATSAPP
+                    </a>
+                `;
+                
+                card.querySelector('.btn-del').onclick = () => {
+                    if(confirm("¿Quieres eliminar la reserva de " + r.nombre + "?")) {
+                        remove(ref(db, 'reservas/' + key));
+                    }
+                };
+                
+                cont.appendChild(card);
+            });
+        }
     });
 </script>
+
 </body>
 </html>
