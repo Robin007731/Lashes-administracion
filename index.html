@@ -16,7 +16,7 @@
         
         /* Cubículo de Producto */
         .card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; margin-bottom: 30px; position: relative; border-left: 5px solid transparent; transition: 0.3s; }
-        .card.modified { border-left: 5px solid #ffcc00; } /* Indica que hay cambios sin guardar */
+        .card.modified { border-left: 5px solid #ffcc00; } 
         
         input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white; box-sizing: border-box; }
         
@@ -83,14 +83,15 @@
 
     let localS = [];
 
+    // --- NAVEGACIÓN ---
     window.showTab = (t) => {
         document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('tab-'+t).classList.remove('hidden');
-        event.currentTarget.classList.add('active');
+        if(event) event.currentTarget.classList.add('active');
     };
 
-    // AGENDA
+    // --- AGENDA ---
     onValue(ref(db, 'reservas'), (snap) => {
         const data = snap.val();
         const div = document.getElementById('listaReservas');
@@ -109,13 +110,14 @@
                 </div>`;
         });
     });
+
     window.elimR = (id) => confirm("¿Borrar de la agenda?") && remove(ref(db, 'reservas/'+id));
 
-    // PRODUCTOS (SISTEMA DE GUARDADO INDIVIDUAL)
+    // --- GESTIÓN DE PRODUCTOS ---
     onValue(ref(db, 'precios'), (snap) => {
         localS = snap.val() || [];
         renderS();
-    }, { onlyOnce: true }); // Solo carga al iniciar para no interrumpir la escritura
+    }, { onlyOnce: true });
 
     function renderS() {
         const div = document.getElementById('precios-lista');
@@ -125,13 +127,13 @@
                 <div class="card" id="card-${i}">
                     <button class="btn-del" onclick="delS(${i})">&times;</button>
                     
-                    <label style="font-size:0.6rem; opacity:0.6">NOMBRE</label>
-                    <input type="text" value="${s.n}" oninput="updateLocal(${i}, 'n', this.value)">
+                    <label style="font-size:0.6rem; opacity:0.6">NOMBRE DEL SERVICIO</label>
+                    <input type="text" value="${s.n || ''}" oninput="updateLocal(${i}, 'n', this.value)">
                     
-                    <label style="font-size:0.6rem; opacity:0.6">PRECIO</label>
-                    <input type="number" value="${s.p}" oninput="updateLocal(${i}, 'p', this.value)">
+                    <label style="font-size:0.6rem; opacity:0.6">PRECIO ($)</label>
+                    <input type="number" value="${s.p || 0}" oninput="updateLocal(${i}, 'p', this.value)">
                     
-                    <label style="font-size:0.6rem; opacity:0.6">FOTO</label>
+                    <label style="font-size:0.6rem; opacity:0.6">IMAGEN PERSONALIZADA</label>
                     <input type="file" accept="image/*" onchange="subirImg(${i}, this)">
                     
                     <img src="${s.img || ''}" class="img-preview" id="img-prev-${i}" style="display:${s.img ? 'block' : 'none'}">
@@ -155,51 +157,72 @@
     };
 
     window.delS = (i) => {
-        if(confirm("¿Eliminar producto?")){
+        if(confirm("¿Eliminar producto definitivamente?")){
             localS.splice(i,1);
             set(ref(db, 'precios'), localS).then(() => renderS());
         }
     };
 
+    // --- LÓGICA DE CARGA DE IMÁGENES ---
     window.subirImg = async (i, input) => {
         const file = input.files[0];
         if(!file) return;
+
         const msg = document.getElementById(`status-${i}`);
+        const preview = document.getElementById(`img-prev-${i}`);
+        
         msg.style.color = "#ffcc00";
-        msg.innerText = "Subiendo imagen...";
-        
-        const storageRef = sRef(storage, 'fotos/' + Date.now() + '.jpg');
-        const snap = await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(snap.ref);
-        
-        localS[i].img = url;
-        document.getElementById(`img-prev-${i}`).src = url;
-        document.getElementById(`img-prev-${i}`).style.display = "block";
-        document.getElementById(`card-${i}`).classList.add('modified');
-        msg.innerText = "Imagen lista para guardar";
+        msg.innerText = "Subiendo imagen al servidor...";
+
+        try {
+            // Nombre de archivo único para evitar reemplazos accidentales
+            const fileName = `servicio_${Date.now()}_${i}.jpg`;
+            const storageRef = sRef(storage, 'fotos/' + fileName);
+            
+            const snap = await uploadBytes(storageRef, file);
+            const url = await getDownloadURL(snap.ref);
+            
+            // Actualizamos la memoria local y la vista previa
+            localS[i].img = url;
+            preview.src = url;
+            preview.style.display = "block";
+            
+            document.getElementById(`card-${i}`).classList.add('modified');
+            msg.innerText = "Imagen lista. Haz clic en publicar.";
+            msg.style.color = "#25D366";
+        } catch (error) {
+            console.error(error);
+            msg.innerText = "Error al subir. Intenta de nuevo.";
+            msg.style.color = "#ff4444";
+        }
     };
 
+    // --- GUARDADO EN DATABASE ---
     window.guardarIndividual = (i) => {
         const msg = document.getElementById(`status-${i}`);
         msg.style.color = "white";
-        msg.innerText = "Publicando...";
+        msg.innerText = "Guardando cambios...";
         
+        // Guardamos todo el array actualizado
         set(ref(db, 'precios'), localS).then(() => {
             msg.style.color = "#25D366";
-            msg.innerText = "¡Publicado al instante!";
+            msg.innerText = "¡Publicado correctamente!";
             document.getElementById(`card-${i}`).classList.remove('modified');
             setTimeout(() => msg.innerText = "", 3000);
+        }).catch(e => {
+            msg.innerText = "Error al guardar en base de datos.";
+            msg.style.color = "#ff4444";
         });
     };
 
+    // --- CONFIGURACIÓN GENERAL ---
     window.guardarConfig = () => {
         set(ref(db, 'config'), {
             nombreNegocio: document.getElementById('config-nombre').value,
             fuente: document.getElementById('config-fuente').value
-        }).then(() => alert("Estilo actualizado en toda la App"));
+        }).then(() => alert("Estilo de la App actualizado"));
     };
 
-    // Cargar Config inicial
     onValue(ref(db, 'config'), (snap) => {
         const c = snap.val();
         if(c){ 
@@ -208,5 +231,6 @@
         }
     });
 </script>
+
 </body>
 </html>
