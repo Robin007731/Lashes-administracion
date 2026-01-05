@@ -3,51 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Admin | Lashista</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <title>Master Admin | Lashista Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&family=Dancing+Script&family=Prata&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --glass: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); }
+        :root { --glass: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --green: #25D366; }
         body { margin: 0; font-family: 'Montserrat', sans-serif; background: #000 url('200025.jpg') center/cover fixed; color: white; }
-        .nav-tabs { display: flex; justify-content: center; gap: 20px; padding: 20px; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000; }
-        .tab-btn { background: none; border: none; color: white; opacity: 0.5; cursor: pointer; font-weight: 700; padding: 10px; }
+        .nav-tabs { display: flex; justify-content: center; gap: 20px; padding: 20px; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--glass-border); }
+        .tab-btn { background: none; border: none; color: white; opacity: 0.5; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         .tab-btn.active { opacity: 1; border-bottom: 2px solid white; }
         .container { max-width: 500px; margin: 100px auto 50px; padding: 20px; }
         .card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; margin-bottom: 20px; position: relative; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-green { background: #25D366; color: white; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.4); color: white; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-green { background: var(--green); color: white; margin-top: 10px; }
+        .btn-ws { background: var(--green); color: white; padding: 10px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; margin-top: 10px; }
         .btn-del { position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
-        .img-preview { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; margin-top: 10px; display: none; }
+        .img-preview { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; margin-top: 10px; border: 1px solid var(--glass-border); }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="nav-tabs">
-    <button class="tab-btn active" onclick="showTab('reservas')">RESERVAS</button>
-    <button class="tab-btn" onclick="showTab('ajustes')">PRODUCTOS Y DISEÑO</button>
+    <button class="tab-btn active" onclick="showTab('reservas')">Agenda</button>
+    <button class="tab-btn" onclick="showTab('ajustes')">Productos / App</button>
 </div>
 
 <div id="tab-reservas" class="container">
+    <h3 style="text-align: center;">PRÓXIMAS CITAS</h3>
     <div id="listaReservas"></div>
 </div>
 
 <div id="tab-ajustes" class="container hidden">
     <div class="card">
-        <h3>APARIENCIA</h3>
-        <input type="text" id="config-nombre" placeholder="Nombre del Salón">
+        <h3>DISEÑO DE APP</h3>
+        <label>Nombre del Negocio:</label>
+        <input type="text" id="config-nombre">
+        <label>Fuente Tipográfica:</label>
         <select id="config-fuente">
-            <option value="'Playfair Display'">Elegante (Playfair)</option>
-            <option value="'Montserrat'">Moderno (Montserrat)</option>
-            <option value="'Dancing Script'">Escritura (Dancing)</option>
+            <option value="'Playfair Display'">Playfair Display (Elegante)</option>
+            <option value="'Montserrat'">Montserrat (Moderno)</option>
+            <option value="'Dancing Script'">Dancing Script (Cursiva)</option>
+            <option value="'Prata'">Prata (Minimalista)</option>
         </select>
-        <button class="btn-main" style="background: white;" onclick="guardarConfig()">Guardar Nombre y Fuente</button>
+        <button class="btn-main" style="background: white; color: black;" onclick="guardarConfig()">Guardar Apariencia</button>
     </div>
 
-    <button class="btn-main btn-green" onclick="nuevoServicio()">+ AGREGAR PRODUCTO/SERVICIO</button>
+    <h3 style="text-align: center;">MIS SERVICIOS</h3>
+    <button class="btn-main btn-green" onclick="nuevoS()">+ AÑADIR NUEVO PRODUCTO</button>
     <div id="precios-lista"></div>
-    <button class="btn-main btn-green" style="background: #1ebd5b; font-size: 1.1rem;" onclick="guardarTodo()">💾 PUBLICAR TODO EN LA APP</button>
+    <button class="btn-main btn-green" style="background: #1ebd5b; margin-top: 20px;" onclick="guardarTodo()">💾 PUBLICAR CAMBIOS EN APP</button>
 </div>
 
 <script type="module">
@@ -69,7 +75,7 @@
     const db = getDatabase(app);
     const storage = getStorage(app);
 
-    let localServices = [];
+    let localS = [];
 
     window.showTab = (t) => {
         document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
@@ -78,65 +84,73 @@
         event.currentTarget.classList.add('active');
     };
 
-    // --- RESERVAS ---
+    // ESCUCHAR RESERVAS CON BOTÓN WHATSAPP
     onValue(ref(db, 'reservas'), (snap) => {
-        const d = snap.val();
-        const l = document.getElementById('listaReservas');
-        l.innerHTML = d ? "" : "<p style='text-align:center;'>No hay citas</p>";
-        if(d) Object.keys(d).reverse().forEach(id => {
-            const r = d[id];
-            l.innerHTML += `<div class="card"><b>${r.nombre}</b><br>${r.servicio}<br><small>${r.fecha} - ${r.hora}</small><br>
-            <button onclick="delR('${id}')" style="background:none; border:none; color:red; cursor:pointer;">Eliminar</button></div>`;
+        const data = snap.val();
+        const div = document.getElementById('listaReservas');
+        div.innerHTML = data ? "" : "<p style='text-align:center;'>No hay reservas registradas.</p>";
+        if(data) Object.keys(data).reverse().forEach(id => {
+            const r = data[id];
+            // Limpiar número para link
+            const cleanTel = r.tel.replace(/\s/g, '').replace(/\+/g, '');
+            div.innerHTML += `
+                <div class="card">
+                    <button class="btn-del" style="top:10px; right:10px" onclick="elimR('${id}')">&times;</button>
+                    <b>${r.nombre}</b><br>
+                    <span>Servicio: ${r.servicio}</span><br>
+                    <small>Día: ${r.fecha || 'Pendiente'} | Hora: ${r.hora || 'Pendiente'}</small><br>
+                    <a href="https://wa.me/${cleanTel}" target="_blank" class="btn-ws">
+                        <i class="fab fa-whatsapp"></i> Contactar Clienta
+                    </a>
+                </div>`;
         });
     });
-    window.delR = (id) => confirm("¿Borrar?") && remove(ref(db, 'reservas/'+id));
+    window.elimR = (id) => confirm("¿Eliminar reserva de la agenda?") && remove(ref(db, 'reservas/'+id));
 
-    // --- PRODUCTOS Y FOTOS ---
-    onValue(ref(db, 'precios'), (snap) => {
-        localServices = snap.val() || [];
-        renderS();
-    });
+    // ESCUCHAR PRODUCTOS
+    onValue(ref(db, 'precios'), (snap) => { localS = snap.val() || []; renderS(); });
 
     function renderS() {
         const div = document.getElementById('precios-lista');
         div.innerHTML = "";
-        localServices.forEach((s, i) => {
+        localS.forEach((s, i) => {
             div.innerHTML += `
                 <div class="card">
                     <button class="btn-del" onclick="delS(${i})">&times;</button>
-                    <input type="text" value="${s.n}" onchange="localServices[${i}].n=this.value" placeholder="Nombre">
-                    <input type="number" value="${s.p}" onchange="localServices[${i}].p=this.value" placeholder="Precio">
-                    <input type="file" accept=".jpg" onchange="uploadI(${i}, this)">
-                    <img src="${s.img}" class="img-preview" id="prev-${i}" style="display:${s.img?'block':'none'}">
+                    <input type="text" value="${s.n}" onchange="localS[${i}].n=this.value" placeholder="Nombre">
+                    <input type="number" value="${s.p}" onchange="localS[${i}].p=this.value" placeholder="Precio">
+                    <input type="file" accept=".jpg" onchange="subirImg(${i}, this)">
+                    ${s.img ? `<img src="${s.img}" class="img-preview">` : '<p style="font-size:0.7rem;">(Sin imagen)</p>'}
                 </div>`;
         });
     }
 
-    window.nuevoServicio = () => { localServices.push({n:'', p:0, img:''}); renderS(); };
-    window.delS = (i) => { if(confirm("¿Borrar producto?")){ localServices.splice(i,1); renderS(); } };
+    window.nuevoS = () => { localS.push({n:'', p:0, img:''}); renderS(); };
+    window.delS = (i) => { if(confirm("¿Borrar producto?")){ localS.splice(i,1); renderS(); } };
 
-    window.uploadI = async (i, input) => {
+    window.subirImg = async (i, input) => {
         const file = input.files[0];
         if(!file) return;
-        const btn = input.previousElementSibling;
-        const refImg = sRef(storage, 'productos/' + Date.now() + '.jpg');
-        const snap = await uploadBytes(refImg, file);
-        const url = await getDownloadURL(snap.ref);
-        localServices[i].img = url;
+        const storageRef = sRef(storage, 'fotos/' + Date.now() + '.jpg');
+        const snap = await uploadBytes(storageRef, file);
+        localS[i].img = await getDownloadURL(snap.ref);
         renderS();
     };
 
-    window.guardarConfig = () => {
-        set(ref(db, 'config'), {
-            nombreNegocio: document.getElementById('config-nombre').value,
-            fuente: document.getElementById('config-fuente').value
-        });
-        alert("Diseño actualizado");
-    };
+    window.guardarConfig = () => set(ref(db, 'config'), {
+        nombreNegocio: document.getElementById('config-nombre').value,
+        fuente: document.getElementById('config-fuente').value
+    }).then(()=>alert("Apariencia Guardada"));
 
-    window.guardarTodo = () => {
-        set(ref(db, 'precios'), localServices).then(() => alert("¡Todo guardado y permanente!"));
-    };
+    window.guardarTodo = () => set(ref(db, 'precios'), localS).then(()=>alert("¡App Actualizada!"));
+
+    onValue(ref(db, 'config'), (snap) => {
+        const c = snap.val();
+        if(c){ 
+            document.getElementById('config-nombre').value = c.nombreNegocio; 
+            document.getElementById('config-fuente').value = c.fuente;
+        }
+    });
 </script>
 </body>
 </html>
