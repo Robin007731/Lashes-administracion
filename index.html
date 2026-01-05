@@ -3,28 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Admin | Gestión Total</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Master Admin | Lashista</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&family=Dancing+Script&family=Prata&family=Italiana&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --glass: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); }
         body { margin: 0; font-family: 'Montserrat', sans-serif; background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('200025.jpg'); background-size: cover; background-attachment: fixed; color: white; }
-        
         .nav-tabs { display: flex; justify-content: center; gap: 30px; padding: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); position: fixed; top: 0; width: 100%; z-index: 1000; }
-        .tab-btn { background: none; border: none; color: white; opacity: 0.5; cursor: pointer; font-weight: 700; letter-spacing: 2px; transition: 0.3s; font-size: 0.8rem; }
+        .tab-btn { background: none; border: none; color: white; opacity: 0.5; cursor: pointer; font-weight: 700; letter-spacing: 2px; font-size: 0.8rem; }
         .tab-btn.active { opacity: 1; border-bottom: 2px solid white; }
-
         .container { max-width: 500px; margin: 100px auto 50px; padding: 20px; }
         .card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; margin-bottom: 20px; position: relative; }
-
         input, select { width: 100%; padding: 12px; margin: 8px 0 10px; border-radius: 5px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white; box-sizing: border-box; }
-        
         .btn-save { width: 100%; padding: 15px; background: white; color: black; border: none; border-radius: 5px; font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         .btn-add { background: #25D366; color: white; margin-bottom: 20px; }
-        .btn-upload { background: #444; color: white; padding: 8px; font-size: 0.7rem; border-radius: 5px; border: none; cursor: pointer; width: 100%; }
-        
-        .btn-delete-service { position: absolute; top: 10px; right: 10px; background: rgba(255,68,68,0.2); color: #ff4444; border: 1px solid #ff4444; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
+        .btn-del-svc { position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -41,25 +34,24 @@
 
 <div id="tab-ajustes" class="container hidden">
     <div class="card">
-        <h3>DISEÑO GENERAL</h3>
-        <label>Nombre del Salón</label>
+        <h3>DISEÑO DE APP</h3>
+        <label>Nombre del Salón:</label>
         <input type="text" id="config-nombre">
-        <label>Fuente</label>
+        <label>Fuente:</label>
         <select id="config-fuente">
             <option value="'Playfair Display'">Playfair Display</option>
             <option value="'Dancing Script'">Dancing Script</option>
             <option value="'Montserrat'">Montserrat</option>
             <option value="'Prata'">Prata</option>
+            <option value="'Italiana'">Italiana</option>
         </select>
-        <button class="btn-save" onclick="guardarConfig()">Guardar Diseño</button>
+        <button class="btn-save" onclick="guardarConfig()">Guardar Apariencia</button>
     </div>
 
-    <h3 style="text-align: center; letter-spacing: 3px;">MIS SERVICIOS</h3>
-    <button class="btn-save btn-add" onclick="agregarNuevoServicio()">+ AGREGAR NUEVO SERVICIO</button>
-    
+    <h3 style="text-align:center">GESTIÓN DE SERVICIOS</h3>
+    <button class="btn-save btn-add" onclick="agregarServicio()">+ AÑADIR SERVICIO</button>
     <div id="precios-lista"></div>
-    
-    <button class="btn-save" style="background:#25D366; color:white;" onclick="guardarTodosLosServicios()">💾 GUARDAR CAMBIOS EN LA APP</button>
+    <button class="btn-save" style="background:#25D366; color:white;" onclick="guardarTodo()">💾 PUBLICAR CAMBIOS</button>
 </div>
 
 <script type="module">
@@ -81,68 +73,68 @@
     const db = getDatabase(app);
     const storage = getStorage(app);
 
-    let serviciosLocal = [];
+    let servicios = [];
 
-    window.showTab = (tab) => {
+    window.showTab = (t) => {
         document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-'+tab).classList.remove('hidden');
+        document.getElementById('tab-'+t).classList.remove('hidden');
         event.currentTarget.classList.add('active');
     };
 
-    // CARGAR DATOS INICIALES
-    onValue(ref(db, 'precios'), (snap) => {
-        serviciosLocal = snap.val() || [];
-        renderServicios();
+    // RESERVAS
+    onValue(ref(db, 'reservas'), (s) => {
+        const d = s.val();
+        const l = document.getElementById('listaReservas');
+        l.innerHTML = d ? "" : "<p>No hay reservas</p>";
+        if(d) Object.keys(d).reverse().forEach(id => {
+            const r = d[id];
+            l.innerHTML += `<div class="card"><b>${r.nombre}</b><br>${r.servicio}<br>${r.fecha} - ${r.hora}
+            <button onclick="elimR('${id}')" style="color:red; background:none; border:none; float:right;">Borrar</button></div>`;
+        });
+    });
+    window.elimR = (id) => confirm("¿Borrar?") && remove(ref(db, 'reservas/'+id));
+
+    // AJUSTES
+    onValue(ref(db, 'config'), (s) => {
+        const c = s.val();
+        if(c){ document.getElementById('config-nombre').value = c.nombreNegocio; document.getElementById('config-fuente').value = c.fuente; }
     });
 
-    function renderServicios() {
-        const div = document.getElementById('precios-lista');
-        div.innerHTML = "";
-        serviciosLocal.forEach((s, i) => {
-            div.innerHTML += `
-                <div class="card">
-                    <button class="btn-delete-service" onclick="eliminarServicioLocal(${i})">&times;</button>
-                    <input type="text" value="${s.n}" onchange="actualizarDato(${i}, 'n', this.value)" placeholder="Nombre del servicio">
-                    <input type="number" value="${s.p}" onchange="actualizarDato(${i}, 'p', this.value)" placeholder="Precio">
-                    <input type="file" id="file-${i}" accept=".jpg" onchange="subirFotoServicio(${i})">
-                    <p style="font-size:0.6rem; opacity:0.5; margin:5px 0;">${s.img ? '✅ Foto cargada' : '❌ Sin foto'}</p>
-                    <input type="hidden" id="img-${i}" value="${s.img || ''}">
-                </div>`;
+    window.guardarConfig = () => set(ref(db, 'config'), {
+        nombreNegocio: document.getElementById('config-nombre').value,
+        fuente: document.getElementById('config-fuente').value
+    }).then(()=>alert("Diseño guardado"));
+
+    // SERVICIOS
+    onValue(ref(db, 'precios'), (s) => { servicios = s.val() || []; renderS(); });
+
+    function renderS() {
+        const d = document.getElementById('precios-lista');
+        d.innerHTML = "";
+        servicios.forEach((s, i) => {
+            d.innerHTML += `<div class="card">
+                <button class="btn-del-svc" onclick="elimS(${i})">&times;</button>
+                <input type="text" value="${s.n}" onchange="servicios[${i}].n=this.value">
+                <input type="number" value="${s.p}" onchange="servicios[${i}].p=this.value">
+                <input type="file" accept=".jpg" onchange="subirF(${i}, this)">
+                <small>${s.img ? '✅ Imagen cargada' : '⚠️ Sin imagen'}</small>
+            </div>`;
         });
     }
 
-    window.agregarNuevoServicio = () => {
-        serviciosLocal.push({ n: 'Nuevo Servicio', p: 0, img: '' });
-        renderServicios();
+    window.agregarServicio = () => { servicios.push({n:'Nuevo', p:0, img:''}); renderS(); };
+    window.elimS = (i) => { servicios.splice(i,1); renderS(); };
+    
+    window.subirF = async (i, input) => {
+        const f = input.files[0];
+        const r = sRef(storage, 's/'+Date.now()+'.jpg');
+        await uploadBytes(r, f);
+        servicios[i].img = await getDownloadURL(r);
+        alert("Foto lista"); renderS();
     };
 
-    window.eliminarServicioLocal = (index) => {
-        if(confirm("¿Eliminar este servicio?")) {
-            serviciosLocal.splice(index, 1);
-            renderServicios();
-        }
-    };
-
-    window.actualizarDato = (index, campo, valor) => {
-        serviciosLocal[index][campo] = valor;
-    };
-
-    window.subirFotoServicio = async (index) => {
-        const file = document.getElementById('file-' + index).files[0];
-        const storageRef = sRef(storage, 'servicios/' + Date.now() + '.jpg');
-        await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(storageRef);
-        serviciosLocal[index].img = url;
-        alert("Foto cargada correctamente");
-        renderServicios();
-    };
-
-    window.guardarTodosLosServicios = () => {
-        set(ref(db, 'precios'), serviciosLocal).then(() => alert("¡App actualizada con éxito!"));
-    };
-
-    // (Aquí irían las funciones de guardarConfig y reservas que ya tenías)
+    window.guardarTodo = () => set(ref(db, 'precios'), servicios).then(()=>alert("Publicado"));
 </script>
 </body>
 </html>
