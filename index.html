@@ -9,18 +9,33 @@
     <style>
         :root { --glass: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --green: #25D366; }
         body { margin: 0; font-family: 'Montserrat', sans-serif; background: #000 url('200025.jpg') center/cover fixed; color: white; }
+        
+        /* Nav corregida */
         .nav-tabs { display: flex; justify-content: center; gap: 20px; padding: 20px; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--glass-border); }
-        .tab-btn { background: none; border: none; color: white; opacity: 0.5; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .tab-btn { background: none; border: none; color: white; opacity: 0.5; cursor: pointer; font-weight: 700; text-transform: uppercase; padding: 10px; transition: 0.3s; }
         .tab-btn.active { opacity: 1; border-bottom: 2px solid white; }
+
         .container { max-width: 500px; margin: 100px auto 50px; padding: 20px; }
-        .card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; margin-bottom: 20px; position: relative; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.4); color: white; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        
+        /* Cards de productos */
+        .card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; margin-bottom: 20px; position: relative; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white; box-sizing: border-box; font-family: 'Montserrat'; }
+        
+        .btn-main { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
         .btn-green { background: var(--green); color: white; margin-top: 10px; }
-        .btn-ws { background: var(--green); color: white; padding: 10px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; margin-top: 10px; }
-        .btn-del { position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
-        .img-preview { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; margin-top: 10px; border: 1px solid var(--glass-border); }
+        .btn-green:hover { background: #1eb954; transform: scale(1.02); }
+        
+        /* Botón WhatsApp arreglado */
+        .btn-ws { background: var(--green); color: white; padding: 12px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.85rem; margin-top: 15px; width: 100%; box-sizing: border-box; }
+        
+        .btn-del { position: absolute; top: 12px; right: 12px; background: rgba(255, 68, 68, 0.8); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; }
+        
+        .img-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 10px; margin: 10px 0; border: 1px solid var(--glass-border); background: #222; }
         .hidden { display: none !important; }
+        
+        h3 { border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; font-family: 'Playfair Display'; letter-spacing: 2px; }
     </style>
 </head>
 <body>
@@ -31,29 +46,33 @@
 </div>
 
 <div id="tab-reservas" class="container">
-    <h3 style="text-align: center;">PRÓXIMAS CITAS</h3>
+    <h3 style="text-align: center;">PRÓXIMAS CLIENTAS</h3>
     <div id="listaReservas"></div>
 </div>
 
 <div id="tab-ajustes" class="container hidden">
     <div class="card">
-        <h3>DISEÑO DE APP</h3>
-        <label>Nombre del Negocio:</label>
+        <h3>DISEÑO GENERAL</h3>
+        <label>Nombre del Salón:</label>
         <input type="text" id="config-nombre">
-        <label>Fuente Tipográfica:</label>
+        <label>Fuente Elegida:</label>
         <select id="config-fuente">
-            <option value="'Playfair Display'">Playfair Display (Elegante)</option>
-            <option value="'Montserrat'">Montserrat (Moderno)</option>
+            <option value="'Playfair Display'">Playfair Display (Clásica)</option>
+            <option value="'Montserrat'">Montserrat (Moderna)</option>
             <option value="'Dancing Script'">Dancing Script (Cursiva)</option>
-            <option value="'Prata'">Prata (Minimalista)</option>
+            <option value="'Prata'">Prata (Elegante)</option>
         </select>
-        <button class="btn-main" style="background: white; color: black;" onclick="guardarConfig()">Guardar Apariencia</button>
+        <button class="btn-main" style="background: white; color: black;" onclick="guardarConfig()">Actualizar Diseño</button>
     </div>
 
-    <h3 style="text-align: center;">MIS SERVICIOS</h3>
-    <button class="btn-main btn-green" onclick="nuevoS()">+ AÑADIR NUEVO PRODUCTO</button>
+    <h3 style="text-align: center; margin-top: 30px;">MIS SERVICIOS</h3>
+    <button class="btn-main btn-green" onclick="nuevoS()">+ CREAR NUEVO PRODUCTO</button>
+    
     <div id="precios-lista"></div>
-    <button class="btn-main btn-green" style="background: #1ebd5b; margin-top: 20px;" onclick="guardarTodo()">💾 PUBLICAR CAMBIOS EN APP</button>
+    
+    <button class="btn-main btn-green" style="background: #1ebd5b; padding: 20px; font-size: 1rem; margin-top: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);" onclick="guardarTodo()">
+       🚀 PUBLICAR CAMBIOS EN LA APP
+    </button>
 </div>
 
 <script type="module">
@@ -77,6 +96,7 @@
 
     let localS = [];
 
+    // Cambiar de Pestaña sin errores
     window.showTab = (t) => {
         document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -84,31 +104,33 @@
         event.currentTarget.classList.add('active');
     };
 
-    // ESCUCHAR RESERVAS CON BOTÓN WHATSAPP
+    // --- AGENDA: CARGA Y WHATSAPP ---
     onValue(ref(db, 'reservas'), (snap) => {
         const data = snap.val();
         const div = document.getElementById('listaReservas');
-        div.innerHTML = data ? "" : "<p style='text-align:center;'>No hay reservas registradas.</p>";
+        div.innerHTML = data ? "" : "<p style='text-align:center; opacity:0.5;'>No hay reservas pendientes.</p>";
         if(data) Object.keys(data).reverse().forEach(id => {
             const r = data[id];
-            // Limpiar número para link
-            const cleanTel = r.tel.replace(/\s/g, '').replace(/\+/g, '');
+            const cleanTel = r.tel ? r.tel.replace(/\D/g, '') : ""; // Solo números
             div.innerHTML += `
                 <div class="card">
-                    <button class="btn-del" style="top:10px; right:10px" onclick="elimR('${id}')">&times;</button>
-                    <b>${r.nombre}</b><br>
-                    <span>Servicio: ${r.servicio}</span><br>
-                    <small>Día: ${r.fecha || 'Pendiente'} | Hora: ${r.hora || 'Pendiente'}</small><br>
+                    <button class="btn-del" onclick="elimR('${id}')">&times;</button>
+                    <div style="font-size:1.1rem; font-weight:600; color:white;">${r.nombre}</div>
+                    <div style="color:var(--green); margin:5px 0;">${r.servicio}</div>
+                    <small style="opacity:0.7;">${r.fecha || 'Turno'} - ${r.hora || 'Pendiente'}</small><br>
                     <a href="https://wa.me/${cleanTel}" target="_blank" class="btn-ws">
-                        <i class="fab fa-whatsapp"></i> Contactar Clienta
+                        <i class="fab fa-whatsapp"></i> CONTACTAR AHORA
                     </a>
                 </div>`;
         });
     });
-    window.elimR = (id) => confirm("¿Eliminar reserva de la agenda?") && remove(ref(db, 'reservas/'+id));
+    window.elimR = (id) => confirm("¿Deseas eliminar esta cita?") && remove(ref(db, 'reservas/'+id));
 
-    // ESCUCHAR PRODUCTOS
-    onValue(ref(db, 'precios'), (snap) => { localS = snap.val() || []; renderS(); });
+    // --- PRODUCTOS: SISTEMA ARREGLADO ---
+    onValue(ref(db, 'precios'), (snap) => { 
+        localS = snap.val() || []; 
+        renderS(); 
+    });
 
     function renderS() {
         const div = document.getElementById('precios-lista');
@@ -117,40 +139,49 @@
             div.innerHTML += `
                 <div class="card">
                     <button class="btn-del" onclick="delS(${i})">&times;</button>
-                    <input type="text" value="${s.n}" onchange="localS[${i}].n=this.value" placeholder="Nombre">
-                    <input type="number" value="${s.p}" onchange="localS[${i}].p=this.value" placeholder="Precio">
+                    <label style="font-size:0.7rem; opacity:0.6;">NOMBRE DEL PRODUCTO</label>
+                    <input type="text" value="${s.n}" onchange="localS[${i}].n=this.value">
+                    <label style="font-size:0.7rem; opacity:0.6;">PRECIO ($)</label>
+                    <input type="number" value="${s.p}" onchange="localS[${i}].p=this.value">
+                    <label style="font-size:0.7rem; opacity:0.6;">CAMBIAR FOTO</label>
                     <input type="file" accept=".jpg" onchange="subirImg(${i}, this)">
-                    ${s.img ? `<img src="${s.img}" class="img-preview">` : '<p style="font-size:0.7rem;">(Sin imagen)</p>'}
+                    ${s.img ? `<img src="${s.img}" class="img-preview">` : '<div class="img-preview" style="display:flex; align-items:center; justify-content:center; font-size:0.7rem;">Sin foto</div>'}
                 </div>`;
         });
     }
 
-    window.nuevoS = () => { localS.push({n:'', p:0, img:''}); renderS(); };
-    window.delS = (i) => { if(confirm("¿Borrar producto?")){ localS.splice(i,1); renderS(); } };
+    window.nuevoS = () => { localS.push({n:'Nuevo Servicio', p:0, img:''}); renderS(); };
+    window.delS = (i) => { if(confirm("¿Eliminar este producto permanentemente?")){ localS.splice(i,1); renderS(); } };
 
     window.subirImg = async (i, input) => {
         const file = input.files[0];
         if(!file) return;
-        const storageRef = sRef(storage, 'fotos/' + Date.now() + '.jpg');
-        const snap = await uploadBytes(storageRef, file);
-        localS[i].img = await getDownloadURL(snap.ref);
-        renderS();
+        const btn = input.previousElementSibling;
+        try {
+            const storageRef = sRef(storage, 'fotos/' + Date.now() + '.jpg');
+            const snap = await uploadBytes(storageRef, file);
+            const url = await getDownloadURL(snap.ref);
+            localS[i].img = url;
+            renderS(); // Refrescar miniatura
+            alert("Imagen cargada con éxito");
+        } catch (e) { alert("Error al subir imagen"); }
     };
 
     window.guardarConfig = () => set(ref(db, 'config'), {
         nombreNegocio: document.getElementById('config-nombre').value,
         fuente: document.getElementById('config-fuente').value
-    }).then(()=>alert("Apariencia Guardada"));
+    }).then(()=>alert("Diseño de App actualizado"));
 
-    window.guardarTodo = () => set(ref(db, 'precios'), localS).then(()=>alert("¡App Actualizada!"));
+    window.guardarTodo = () => set(ref(db, 'precios'), localS).then(()=>alert("¡La App ha sido actualizada para todas las clientas!"));
 
+    // Cargar config inicial
     onValue(ref(db, 'config'), (snap) => {
         const c = snap.val();
         if(c){ 
-            document.getElementById('config-nombre').value = c.nombreNegocio; 
-            document.getElementById('config-fuente').value = c.fuente;
+            document.getElementById('config-nombre').value = c.nombreNegocio || ""; 
+            document.getElementById('config-fuente').value = c.fuente || "'Montserrat'";
         }
     });
 </script>
 </body>
-</html>
+</html>s
