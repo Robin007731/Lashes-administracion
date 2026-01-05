@@ -3,106 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANEL CONTROL | Lashista Studio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Lashista Studio | Reservas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { 
-            --glass: rgba(255, 255, 255, 0.1); 
-            --glass-border: rgba(255, 255, 255, 0.2); 
-            --accent: #25D366; 
+        :root {
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --accent: #25D366;
         }
 
-        body { 
-            margin: 0; font-family: 'Montserrat', sans-serif; 
-            background: #000 url('200025.jpg') center/cover fixed; 
-            color: white; 
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+            /* AQUÍ SE MANTIENE TU IMAGEN DE FONDO */
+            background: #000 url('200025.jpg') center/cover fixed;
+            color: white;
         }
 
-        /* Barra de Navegación Superior */
-        .nav-tabs { 
-            display: flex; justify-content: center; gap: 30px; 
-            padding: 20px; background: rgba(0,0,0,0.95); 
-            position: fixed; top: 0; width: 100%; z-index: 1000; 
-            border-bottom: 1px solid var(--glass-border); 
-        }
-        .tab-btn { 
-            background: none; border: none; color: white; opacity: 0.5; 
-            cursor: pointer; font-weight: 700; text-transform: uppercase; 
-            padding: 10px; font-size: 0.9rem; transition: 0.3s;
-            letter-spacing: 2px;
-        }
-        .tab-btn.active { opacity: 1; border-bottom: 2px solid white; }
-
-        .container { max-width: 500px; margin: 120px auto 50px; padding: 0 20px; }
-
-        /* Tarjetas de Servicio y Reserva */
-        .card { 
-            background: var(--glass); backdrop-filter: blur(25px); 
-            border: 1px solid var(--glass-border); padding: 20px; 
-            border-radius: 18px; margin-bottom: 25px; position: relative; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        header {
+            position: fixed;
+            top: 0; width: 100%; text-align: center; padding: 20px 0;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
+            z-index: 1000; border-bottom: 1px solid var(--glass-border);
         }
 
-        input { 
-            width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; 
-            border: 1px solid var(--glass-border); background: rgba(0,0,0,0.6); 
-            color: white; box-sizing: border-box; font-family: 'Montserrat';
-            font-size: 1rem;
+        .container {
+            max-width: 450px; margin: 0 auto;
+            padding: 110px 20px 40px;
         }
 
-        .btn-main { 
-            width: 100%; padding: 16px; border-radius: 10px; border: none; 
-            font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 10px; 
-            letter-spacing: 1px;
+        .card {
+            background: var(--glass); backdrop-filter: blur(25px);
+            border-radius: 20px; padding: 25px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
-        .btn-save { background: var(--accent); color: black; transition: 0.2s; }
-        .btn-save:active { transform: scale(0.98); }
+
+        input, select {
+            width: 100%; padding: 14px; margin: 10px 0;
+            border-radius: 10px; border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.6); color: white;
+            box-sizing: border-box; font-family: 'Montserrat';
+        }
+
+        .btn-main {
+            width: 100%; padding: 16px; border-radius: 10px; border: none;
+            background: white; color: black; font-weight: 700;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        .item {
+            background: rgba(0,0,0,0.5); padding: 15px;
+            border-radius: 12px; margin-bottom: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .price { color: var(--accent); font-weight: 700; font-size: 1.2rem; }
         
-        .btn-add { background: white; color: black; margin-bottom: 30px; }
-        
-        .btn-del { 
-            position: absolute; top: -10px; right: -10px; background: #ff4444; 
-            color: white; border: none; border-radius: 50%; width: 30px; height: 30px; 
-            cursor: pointer; font-weight: bold; font-size: 1.2rem;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        /* Estilos específicos de la Agenda */
-        .reserva-item { border-left: 5px solid var(--accent); }
-        .reserva-nombre { font-size: 1.2rem; font-weight: 700; margin-bottom: 5px; color: white; }
-        .reserva-detalle { font-size: 0.95rem; opacity: 0.8; margin-bottom: 15px; line-height: 1.5; }
-        .btn-whatsapp { 
-            display: inline-flex; align-items: center; justify-content: center;
-            gap: 8px; background: #25D366; color: black; 
-            width: 100%; padding: 12px; border-radius: 8px; 
-            text-decoration: none; font-weight: 700; font-size: 0.85rem;
+        .btn-select {
+            background: white; color: black; border: none;
+            padding: 8px 12px; border-radius: 5px; font-weight: 700;
+            cursor: pointer; font-size: 0.7rem; text-transform: uppercase;
         }
 
         .hidden { display: none !important; }
-        .empty-msg { text-align: center; opacity: 0.5; padding: 40px; }
+        label { font-size: 0.8rem; opacity: 0.8; margin-left: 5px; }
     </style>
 </head>
 <body>
 
-<div class="nav-tabs">
-    <button class="tab-btn active" onclick="showTab('servicios')">Servicios</button>
-    <button class="tab-btn" onclick="showTab('agenda')">Agenda</button>
-</div>
+<header><h1 style="margin:0; font-size:1.2rem; letter-spacing:5px;">LASHISTA</h1></header>
 
-<div id="tab-servicios" class="container">
-    <button class="btn-main btn-add" onclick="nuevoS()">+ CREAR NUEVO SERVICIO</button>
-    <div id="lista-precios"></div>
-</div>
+<div class="container">
+    <div id="step-1" class="card">
+        <h2 style="text-align:center; font-weight:300;">BIENVENIDA</h2>
+        <input id="c-name" type="text" placeholder="Tu Nombre">
+        <input id="c-tel" type="tel" placeholder="Tu WhatsApp">
+        <button class="btn-main" onclick="goToStep2()">VER SERVICIOS</button>
+    </div>
 
-<div id="tab-agenda" class="container hidden">
-    <h3 style="text-align: center; letter-spacing: 3px; font-weight: 300;">CLIENTAS AGENDADAS</h3>
-    <div id="lista-reservas"></div>
+    <div id="step-2" class="hidden">
+        <div id="servicios-cont"></div>
+        <button class="btn-main" style="background:none; border:1px solid white; color:white; margin-top:15px;" onclick="location.reload()">VOLVER</button>
+    </div>
+
+    <div id="step-3" class="card hidden">
+        <h3 id="resumen-seleccion" style="text-align:center; font-size:0.9rem; color:var(--accent);"></h3>
+        
+        <label>Elegir Fecha:</label>
+        <input type="date" id="res-fecha">
+        
+        <label>Elegir Hora:</label>
+        <select id="res-hora">
+            <option value="09:00">09:00 AM</option>
+            <option value="10:00">10:00 AM</option>
+            <option value="11:00">11:00 AM</option>
+            <option value="12:00">12:00 PM</option>
+            <option value="13:00">01:00 PM</option>
+            <option value="14:00">02:00 PM</option>
+            <option value="15:00">03:00 PM</option>
+            <option value="16:00">04:00 PM</option>
+            <option value="17:00">05:00 PM</option>
+            <option value="18:00">06:00 PM</option>
+            <option value="19:00">07:00 PM</option>
+            <option value="20:00">08:00 PM</option>
+        </select>
+
+        <button class="btn-main" style="background:var(--accent); color:black;" onclick="confirmarReserva()">CONFIRMAR CITA</button>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const config = {
         apiKey: "AIzaSyAqJHNrx8iuTsXrAsRmP9wl4xUB78l9E8w",
@@ -116,89 +132,64 @@
 
     const app = initializeApp(config);
     const db = getDatabase(app);
-    let localS = [];
+    let cliente = { nombre: '', tel: '' };
+    let seleccion = { servicio: '', precio: '' };
 
-    // Manejo de pestañas
-    window.showTab = (tab) => {
-        document.getElementById('tab-servicios').classList.add('hidden');
-        document.getElementById('tab-agenda').classList.add('hidden');
-        document.getElementById('tab-' + tab).classList.remove('hidden');
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-    };
-
-    // --- GESTIÓN DE SERVICIOS (PRODUCTOS) ---
+    // Cargar servicios del Admin
     onValue(ref(db, 'precios'), (snap) => {
-        localS = snap.val() || [];
-        const div = document.getElementById('lista-precios');
-        div.innerHTML = "";
-        localS.forEach((s, i) => {
-            div.innerHTML += `
-                <div class="card">
-                    <button class="btn-del" onclick="delS(${i})">×</button>
-                    <label style="font-size:0.7rem; opacity:0.6; text-transform:uppercase;">Servicio</label>
-                    <input type="text" value="${s.n || ''}" oninput="localS[${i}].n=this.value">
-                    <label style="font-size:0.7rem; opacity:0.6; text-transform:uppercase;">Precio ($)</label>
-                    <input type="number" value="${s.p || 0}" oninput="localS[${i}].p=this.value">
-                    <button class="btn-main btn-save" onclick="save()">GUARDAR CAMBIOS</button>
-                </div>`;
-        });
-    });
-
-    window.save = () => {
-        set(ref(db, 'precios'), localS).then(() => {
-            alert("¡Catálogo actualizado al instante!");
-        });
-    };
-
-    window.nuevoS = () => {
-        localS.push({ n: 'Nuevo Servicio', p: 0 });
-        save();
-    };
-
-    window.delS = (i) => {
-        if(confirm("¿Estás segura de eliminar este servicio del catálogo?")) {
-            localS.splice(i, 1);
-            save();
-        }
-    };
-
-    // --- GESTIÓN DE AGENDA (CLIENTAS) ---
-    onValue(ref(db, 'reservas'), (snap) => {
-        const data = snap.val();
-        const cont = document.getElementById('lista-reservas');
+        const datos = snap.val() || [];
+        const cont = document.getElementById('servicios-cont');
         cont.innerHTML = "";
-
-        if(!data) {
-            cont.innerHTML = "<div class='empty-msg'>No hay reservas registradas.</div>";
-            return;
-        }
-
-        // Mostrar las más recientes arriba
-        Object.keys(data).reverse().forEach(key => {
-            const r = data[key];
+        datos.forEach(p => {
             cont.innerHTML += `
-                <div class="card reserva-item">
-                    <button class="btn-del" onclick="borrarReserva('${key}')">×</button>
-                    <div class="reserva-nombre">${r.nombre}</div>
-                    <div class="reserva-detalle">
-                        Quiere reservar: <b>${r.servicio}</b><br>
-                        Precio: <b>$${r.precio}</b><br>
-                        WhatsApp: ${r.tel}
+                <div class="item">
+                    <div>
+                        <span class="name">${p.n}</span>
+                        <button class="btn-select" onclick="abrirCalendario('${p.n}', '${p.p}')">SELECCIONAR</button>
                     </div>
-                    <a href="https://wa.me/${r.tel.replace(/\D/g,'')}" target="_blank" class="btn-whatsapp">
-                        <i class="fab fa-whatsapp"></i> HABLAR POR WHATSAPP
-                    </a>
+                    <span class="price">$${p.p}</span>
                 </div>`;
         });
     });
 
-    window.borrarReserva = (key) => {
-        if(confirm("¿Deseas eliminar esta clienta de la lista?")) {
-            remove(ref(db, `reservas/${key}`));
-        }
+    window.goToStep2 = () => {
+        cliente.nombre = document.getElementById('c-name').value;
+        cliente.tel = document.getElementById('c-tel').value;
+        if(cliente.nombre && cliente.tel) {
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+        } else alert("Completa tus datos");
     };
 
+    window.abrirCalendario = (s, p) => {
+        seleccion.servicio = s;
+        seleccion.precio = p;
+        document.getElementById('resumen-seleccion').innerText = `${s} - $${p}`;
+        document.getElementById('step-2').classList.add('hidden');
+        document.getElementById('step-3').classList.remove('hidden');
+    };
+
+    window.confirmarReserva = () => {
+        const fecha = document.getElementById('res-fecha').value;
+        const hora = document.getElementById('res-hora').value;
+
+        if(!fecha || !hora) return alert("Elige fecha y hora");
+
+        const cita = {
+            ...cliente,
+            ...seleccion,
+            fecha,
+            hora,
+            timestamp: Date.now()
+        };
+
+        // Guardar en Firebase para el Admin
+        push(ref(db, 'reservas'), cita).then(() => {
+            // Enviar a WhatsApp
+            const msj = `¡Hola! Soy ${cliente.nombre}. Reservé: *${seleccion.servicio}* para el día *${fecha}* a las *${hora} hs*.`;
+            window.location.href = `https://wa.me/59899123456?text=${encodeURIComponent(msj)}`;
+        });
+    };
 </script>
 </body>
 </html>
