@@ -13,15 +13,22 @@
         .tab-btn { background: none; border: none; color: white; opacity: 0.5; cursor: pointer; font-weight: 700; text-transform: uppercase; padding: 10px; }
         .tab-btn.active { opacity: 1; border-bottom: 2px solid white; }
         .container { max-width: 500px; margin: 100px auto 50px; padding: 20px; }
-        .card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; margin-bottom: 20px; position: relative; }
+        
+        /* Cubículo de Producto */
+        .card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; margin-bottom: 30px; position: relative; border-left: 5px solid transparent; transition: 0.3s; }
+        .card.modified { border-left: 5px solid #ffcc00; } /* Indica que hay cambios sin guardar */
+        
         input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
-        .btn-green { background: var(--green); color: white; margin-top: 10px; }
+        
+        .btn-main { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .btn-save-item { background: #1ebd5b; color: white; font-size: 0.8rem; }
+        .btn-add { background: white; color: black; margin-bottom: 20px; }
         .btn-ws { background: var(--green); color: white; padding: 12px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; box-sizing: border-box; margin-top: 10px; }
-        .btn-del { position: absolute; top: 12px; right: 12px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; z-index: 10; }
+        .btn-del { position: absolute; top: -10px; right: -10px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        
         .img-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 10px; margin: 10px 0; border: 1px solid var(--glass-border); background: #222; }
         .hidden { display: none !important; }
-        .status-msg { font-size: 0.8rem; text-align: center; color: #ffcc00; margin-bottom: 10px; }
+        .status-msg { font-size: 0.7rem; text-align: center; color: #25D366; margin-top: 5px; height: 15px; }
     </style>
 </head>
 <body>
@@ -37,26 +44,22 @@
 </div>
 
 <div id="tab-ajustes" class="container hidden">
-    <div class="card">
+    <div class="card" style="border-left: 5px solid white;">
         <h3>DISEÑO DE APP</h3>
         <input type="text" id="config-nombre" placeholder="Nombre del Negocio">
         <select id="config-fuente">
-            <option value="'Playfair Display'">Playfair Display (Clásica)</option>
-            <option value="'Montserrat'">Montserrat (Moderna)</option>
-            <option value="'Dancing Script'">Dancing Script (Cursiva)</option>
-            <option value="'Prata'">Prata (Elegante)</option>
+            <option value="'Playfair Display'">Playfair Display</option>
+            <option value="'Montserrat'">Montserrat</option>
+            <option value="'Dancing Script'">Dancing Script</option>
+            <option value="'Prata'">Prata</option>
         </select>
-        <button class="btn-main" style="background: white; color: black;" onclick="guardarConfig()">Guardar Nombre y Fuente</button>
+        <button class="btn-main" style="background: white; color: black;" onclick="guardarConfig()">Actualizar Estilo</button>
     </div>
 
-    <h3 style="text-align: center; margin-top: 30px;">PRODUCTOS</h3>
-    <button class="btn-main btn-green" onclick="nuevoS()">+ CREAR NUEVO PRODUCTO</button>
+    <h3 style="text-align: center; margin-top: 30px;">GESTIÓN DE PRODUCTOS</h3>
+    <button class="btn-main btn-add" onclick="nuevoS()">+ CREAR NUEVO CUBÍCULO</button>
     
     <div id="precios-lista"></div>
-    
-    <button class="btn-main" style="background: #1ebd5b; color:white; padding: 20px; font-size: 1.1rem; margin-top: 20px;" onclick="guardarTodo()">
-       💾 GUARDAR CAMBIOS Y PUBLICAR
-    </button>
 </div>
 
 <script type="module">
@@ -91,7 +94,7 @@
     onValue(ref(db, 'reservas'), (snap) => {
         const data = snap.val();
         const div = document.getElementById('listaReservas');
-        div.innerHTML = data ? "" : "<p style='text-align:center; opacity:0.5;'>Sin reservas.</p>";
+        div.innerHTML = data ? "" : "<p style='text-align:center;'>Sin reservas.</p>";
         if(data) Object.keys(data).reverse().forEach(id => {
             const r = data[id];
             const cleanTel = r.tel ? r.tel.replace(/\D/g, '') : "";
@@ -101,77 +104,102 @@
                     <b>${r.nombre}</b><br>
                     <span style="color:var(--green)">${r.servicio}</span><br>
                     <a href="https://wa.me/${cleanTel}" target="_blank" class="btn-ws">
-                        <i class="fab fa-whatsapp"></i> CONTACTAR
+                        <i class="fab fa-whatsapp"></i> CONTACTAR CLIENTA
                     </a>
                 </div>`;
         });
     });
-    window.elimR = (id) => confirm("¿Eliminar cita?") && remove(ref(db, 'reservas/'+id));
+    window.elimR = (id) => confirm("¿Borrar de la agenda?") && remove(ref(db, 'reservas/'+id));
 
-    // PRODUCTOS (SINCRONIZACIÓN CORREGIDA)
-    // Solo cargamos de Firebase al iniciar, luego manejamos localS para evitar que se borre al escribir
-    let inicializado = false;
+    // PRODUCTOS (SISTEMA DE GUARDADO INDIVIDUAL)
     onValue(ref(db, 'precios'), (snap) => {
-        if (!inicializado) {
-            localS = snap.val() || [];
-            renderS();
-            inicializado = true;
-        }
-    });
+        localS = snap.val() || [];
+        renderS();
+    }, { onlyOnce: true }); // Solo carga al iniciar para no interrumpir la escritura
 
     function renderS() {
         const div = document.getElementById('precios-lista');
         div.innerHTML = "";
         localS.forEach((s, i) => {
             div.innerHTML += `
-                <div class="card">
+                <div class="card" id="card-${i}">
                     <button class="btn-del" onclick="delS(${i})">&times;</button>
-                    <input type="text" value="${s.n}" oninput="localS[${i}].n=this.value" placeholder="Nombre">
-                    <input type="number" value="${s.p}" oninput="localS[${i}].p=this.value" placeholder="Precio">
+                    
+                    <label style="font-size:0.6rem; opacity:0.6">NOMBRE</label>
+                    <input type="text" value="${s.n}" oninput="updateLocal(${i}, 'n', this.value)">
+                    
+                    <label style="font-size:0.6rem; opacity:0.6">PRECIO</label>
+                    <input type="number" value="${s.p}" oninput="updateLocal(${i}, 'p', this.value)">
+                    
+                    <label style="font-size:0.6rem; opacity:0.6">FOTO</label>
                     <input type="file" accept="image/*" onchange="subirImg(${i}, this)">
+                    
+                    <img src="${s.img || ''}" class="img-preview" id="img-prev-${i}" style="display:${s.img ? 'block' : 'none'}">
+                    
+                    <button class="btn-main btn-save-item" onclick="guardarIndividual(${i})">
+                       <i class="fas fa-cloud-upload-alt"></i> PUBLICAR ESTE PRODUCTO
+                    </button>
                     <div id="status-${i}" class="status-msg"></div>
-                    ${s.img ? `<img src="${s.img}" class="img-preview">` : '<div class="img-preview"></div>'}
                 </div>`;
         });
     }
 
-    window.nuevoS = () => { localS.push({n:'Nuevo', p:0, img:''}); renderS(); };
-    window.delS = (i) => { if(confirm("¿Borrar?")){ localS.splice(i,1); renderS(); } };
+    window.updateLocal = (i, field, val) => {
+        localS[i][field] = val;
+        document.getElementById(`card-${i}`).classList.add('modified');
+    };
+
+    window.nuevoS = () => {
+        localS.push({n:'', p:0, img:''});
+        renderS();
+    };
+
+    window.delS = (i) => {
+        if(confirm("¿Eliminar producto?")){
+            localS.splice(i,1);
+            set(ref(db, 'precios'), localS).then(() => renderS());
+        }
+    };
 
     window.subirImg = async (i, input) => {
         const file = input.files[0];
         if(!file) return;
         const msg = document.getElementById(`status-${i}`);
-        msg.innerText = "Subiendo imagen... por favor espera";
+        msg.style.color = "#ffcc00";
+        msg.innerText = "Subiendo imagen...";
         
-        try {
-            const storageRef = sRef(storage, 'productos/' + Date.now() + '.jpg');
-            const snap = await uploadBytes(storageRef, file);
-            const url = await getDownloadURL(snap.ref);
-            localS[i].img = url;
-            msg.innerText = "¡Imagen cargada!";
-            renderS(); 
-        } catch (e) { 
-            msg.innerText = "Error al subir";
-            console.error(e);
-        }
+        const storageRef = sRef(storage, 'fotos/' + Date.now() + '.jpg');
+        const snap = await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(snap.ref);
+        
+        localS[i].img = url;
+        document.getElementById(`img-prev-${i}`).src = url;
+        document.getElementById(`img-prev-${i}`).style.display = "block";
+        document.getElementById(`card-${i}`).classList.add('modified');
+        msg.innerText = "Imagen lista para guardar";
+    };
+
+    window.guardarIndividual = (i) => {
+        const msg = document.getElementById(`status-${i}`);
+        msg.style.color = "white";
+        msg.innerText = "Publicando...";
+        
+        set(ref(db, 'precios'), localS).then(() => {
+            msg.style.color = "#25D366";
+            msg.innerText = "¡Publicado al instante!";
+            document.getElementById(`card-${i}`).classList.remove('modified');
+            setTimeout(() => msg.innerText = "", 3000);
+        });
     };
 
     window.guardarConfig = () => {
         set(ref(db, 'config'), {
             nombreNegocio: document.getElementById('config-nombre').value,
             fuente: document.getElementById('config-fuente').value
-        }).then(() => alert("Diseño guardado"));
+        }).then(() => alert("Estilo actualizado en toda la App"));
     };
 
-    window.guardarTodo = () => {
-        set(ref(db, 'precios'), localS).then(() => {
-            alert("¡Cambios publicados con éxito!");
-            // No reiniciamos localS, se mantiene con lo que hay en pantalla
-        }).catch(e => alert("Error al guardar"));
-    };
-
-    // Cargar config
+    // Cargar Config inicial
     onValue(ref(db, 'config'), (snap) => {
         const c = snap.val();
         if(c){ 
