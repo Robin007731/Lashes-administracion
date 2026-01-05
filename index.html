@@ -7,44 +7,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --glass: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --green: #25D366; }
+        :root { --glass: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); }
         body { margin: 0; font-family: 'Montserrat', sans-serif; background: #000 url('200025.jpg') center/cover fixed; color: white; }
-        .nav-tabs { display: flex; justify-content: center; gap: 20px; padding: 20px; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--glass-border); }
-        .tab-btn { background: none; border: none; color: white; opacity: 0.5; cursor: pointer; font-weight: 700; text-transform: uppercase; padding: 10px; }
-        .tab-btn.active { opacity: 1; border-bottom: 2px solid white; }
+        .nav-tabs { display: flex; justify-content: center; gap: 20px; padding: 20px; background: rgba(0,0,0,0.9); position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--glass-border); }
         .container { max-width: 500px; margin: 100px auto 50px; padding: 20px; }
         .card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; margin-bottom: 30px; position: relative; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white; box-sizing: border-box; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.8); color: white; box-sizing: border-box; }
         .btn-main { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-save-item { background: #1ebd5b; color: white; }
+        .btn-save { background: #1ebd5b; color: white; }
         .btn-add { background: white; color: black; margin-bottom: 20px; }
         .btn-del { position: absolute; top: -10px; right: -10px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
-        .img-container { width: 100%; height: 180px; background: #111; border-radius: 10px; overflow: hidden; margin: 10px 0; display: flex; align-items: center; justify-content: center; border: 1px solid var(--glass-border); }
+        .img-container { width: 100%; height: 150px; background: #111; border-radius: 10px; margin: 10px 0; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--glass-border); }
         .img-prev { width: 100%; height: 100%; object-fit: cover; }
-        .status-msg { font-size: 0.75rem; text-align: center; color: #ffcc00; height: 15px; margin-top: 5px; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="nav-tabs">
-    <button class="tab-btn active" onclick="showTab('ajustes')">Productos</button>
-    <button class="tab-btn" onclick="showTab('reservas')">Agenda</button>
+    <button class="btn-main" style="width:auto; background:none; color:white;" onclick="location.reload()">REFRESCAR DATOS</button>
 </div>
 
-<div id="tab-ajustes" class="container">
-    <button class="btn-main btn-add" onclick="nuevoS()">+ NUEVO SERVICIO</button>
+<div class="container">
+    <button class="btn-main btn-add" onclick="nuevoS()">+ NUEVO SERVICIO / PRODUCTO</button>
     <div id="precios-lista"></div>
-</div>
-
-<div id="tab-reservas" class="container hidden">
-    <h3 style="text-align: center;">PRÓXIMAS CLIENTAS</h3>
-    <div id="listaReservas"></div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
     import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
     const firebaseConfig = {
@@ -62,12 +53,14 @@
     const storage = getStorage(app);
     let localS = [];
 
-    window.showTab = (t) => {
-        document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-'+t).classList.remove('hidden');
-        event.currentTarget.classList.add('active');
-    };
+    // Opciones de imágenes predefinidas
+    const predefinidas = [
+        { nombre: "Personalizada / Subir propia", archivo: "" },
+        { nombre: "Clásicas", archivo: "clasicas.jpg" },
+        { nombre: "Volumen 3D", archivo: "3d.jpg" },
+        { nombre: "Volumen 4D", archivo: "4d.jpg" },
+        { nombre: "Volumen 5D", archivo: "5d.jpg" }
+    ];
 
     onValue(ref(db, 'precios'), (snap) => {
         localS = snap.val() || [];
@@ -78,62 +71,71 @@
         const div = document.getElementById('precios-lista');
         div.innerHTML = "";
         localS.forEach((s, i) => {
+            // Generar opciones del selector
+            let opcionesHTML = predefinidas.map(p => 
+                `<option value="${p.archivo}" ${s.img === p.archivo ? 'selected' : ''}>${p.nombre}</option>`
+            ).join('');
+
             div.innerHTML += `
                 <div class="card">
                     <button class="btn-del" onclick="delS(${i})">&times;</button>
-                    <label style="font-size:0.7rem;">NOMBRE</label>
-                    <input type="text" value="${s.n || ''}" oninput="updateLocal(${i}, 'n', this.value)">
-                    <label style="font-size:0.7rem;">PRECIO</label>
-                    <input type="number" value="${s.p || 0}" oninput="updateLocal(${i}, 'p', this.value)">
-                    <label style="font-size:0.7rem;">FOTO (JPG)</label>
-                    <input type="file" accept="image/*" onchange="subirImg(${i}, this)">
+                    
+                    <label style="font-size:0.7rem;">NOMBRE DEL SERVICIO</label>
+                    <input type="text" value="${s.n || ''}" oninput="localS[${i}].n = this.value">
+                    
+                    <label style="font-size:0.7rem;">PRECIO ($)</label>
+                    <input type="number" value="${s.p || 0}" oninput="localS[${i}].p = this.value">
+                    
+                    <label style="font-size:0.7rem;">SELECCIONAR IMAGEN</label>
+                    <select onchange="seleccionarImagen(${i}, this.value)">
+                        ${opcionesHTML}
+                        ${(s.img && !predefinidas.find(p=>p.archivo===s.img)) ? `<option value="${s.img}" selected>Imagen subida actualmente</option>` : ''}
+                    </select>
+
+                    <div style="font-size:0.7rem; margin-top:5px; opacity:0.6;">O SUBIR UNA NUEVA:</div>
+                    <input type="file" accept="image/*" onchange="subirNuevaImg(${i}, this)">
+
                     <div class="img-container">
-                        <img src="${s.img || ''}" class="img-prev" id="img-prev-${i}" style="display:${s.img ? 'block' : 'none'}">
-                        ${!s.img ? '<i class="fas fa-camera" style="opacity:0.2; font-size:2rem;"></i>' : ''}
+                        <img src="${s.img || '200025.jpg'}" class="img-prev" id="img-prev-${i}">
                     </div>
-                    <button class="btn-main btn-save-item" onclick="guardarIndividual(${i})">GUARDAR TEXTOS</button>
-                    <div id="status-${i}" class="status-msg"></div>
+
+                    <button class="btn-main btn-save" onclick="guardarTodo()">GUARDAR Y PUBLICAR</button>
+                    <div id="status-${i}" style="font-size:0.7rem; text-align:center; margin-top:5px;"></div>
                 </div>`;
         });
     }
 
-    window.updateLocal = (i, field, val) => { localS[i][field] = val; };
-
-    window.subirImg = async (i, input) => {
-        const file = input.files[0];
-        if(!file) return;
-        const msg = document.getElementById(`status-${i}`);
-        msg.innerText = "Subiendo imagen...";
-        
-        try {
-            const storageRef = sRef(storage, `servicios/img_${Date.now()}`);
-            const snap = await uploadBytes(storageRef, file);
-            const url = await getDownloadURL(snap.ref);
-            
-            localS[i].img = url;
-            await set(ref(db, 'precios'), localS); // Guardado instantáneo
-            
-            document.getElementById(`img-prev-${i}`).src = url;
-            document.getElementById(`img-prev-${i}`).style.display = "block";
-            msg.style.color = "#25D366";
-            msg.innerText = "¡Imagen activa!";
-            setTimeout(() => msg.innerText = "", 2000);
-        } catch (e) { 
-            msg.innerText = "Error al subir"; 
+    window.seleccionarImagen = (i, valor) => {
+        if(valor !== "") {
+            localS[i].img = valor;
+            document.getElementById(`img-prev-${i}`).src = valor;
         }
     };
 
-    window.guardarIndividual = (i) => {
-        set(ref(db, 'precios'), localS).then(() => {
-            const msg = document.getElementById(`status-${i}`);
-            msg.style.color = "#25D366";
-            msg.innerText = "Datos guardados";
-            setTimeout(() => msg.innerText = "", 2000);
-        });
+    window.subirNuevaImg = async (i, input) => {
+        const file = input.files[0];
+        if(!file) return;
+        const status = document.getElementById(`status-${i}`);
+        status.innerText = "Subiendo archivo...";
+
+        try {
+            const storageRef = sRef(storage, `fotos/img_${Date.now()}`);
+            const snap = await uploadBytes(storageRef, file);
+            const url = await getDownloadURL(snap.ref);
+            localS[i].img = url;
+            document.getElementById(`img-prev-${i}`).src = url;
+            status.innerText = "¡Imagen lista!";
+        } catch (e) {
+            status.innerText = "Error al subir";
+        }
     };
 
-    window.nuevoS = () => { localS.push({n:'', p:0, img:''}); renderS(); };
-    window.delS = (i) => { if(confirm("¿Eliminar?")) { localS.splice(i,1); set(ref(db, 'precios'), localS).then(renderS); } };
+    window.guardarTodo = () => {
+        set(ref(db, 'precios'), localS).then(() => alert("¡Catálogo actualizado para clientes!"));
+    };
+
+    window.nuevoS = () => { localS.push({n:'', p:0, img:'clasicas.jpg'}); renderS(); };
+    window.delS = (i) => { if(confirm("¿Borrar?")) { localS.splice(i,1); guardarTodo(); renderS(); } };
 </script>
 </body>
 </html>
