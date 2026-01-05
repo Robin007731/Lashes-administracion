@@ -3,39 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Admin | Lashista Studio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <title>MASTER ADMIN | Lashista Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --glass: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); }
-        body { margin: 0; font-family: 'Montserrat', sans-serif; background: #000 url('200025.jpg') center/cover fixed; color: white; }
-        .nav-tabs { display: flex; justify-content: center; gap: 20px; padding: 20px; background: rgba(0,0,0,0.9); position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--glass-border); }
+        :root { 
+            --glass: rgba(255, 255, 255, 0.1); 
+            --glass-border: rgba(255, 255, 255, 0.2); 
+            --accent: #25D366; 
+        }
+
+        body { 
+            margin: 0; font-family: 'Montserrat', sans-serif; 
+            background: #000 url('200025.jpg') center/cover fixed; 
+            color: white; 
+        }
+
+        /* Navegación por Pestañas */
+        .nav-tabs { 
+            display: flex; justify-content: center; gap: 20px; 
+            padding: 20px; background: rgba(0,0,0,0.9); 
+            position: fixed; top: 0; width: 100%; z-index: 1000; 
+            border-bottom: 1px solid var(--glass-border); 
+        }
+        .tab-btn { 
+            background: none; border: none; color: white; opacity: 0.5; 
+            cursor: pointer; font-weight: 700; text-transform: uppercase; 
+            padding: 10px; transition: 0.3s;
+        }
+        .tab-btn.active { opacity: 1; border-bottom: 2px solid white; }
+
         .container { max-width: 500px; margin: 100px auto 50px; padding: 20px; }
-        .card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; margin-bottom: 30px; position: relative; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.8); color: white; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-save { background: #1ebd5b; color: white; }
+
+        /* Tarjetas Estilo Glass */
+        .card { 
+            background: var(--glass); backdrop-filter: blur(20px); 
+            border: 1px solid var(--glass-border); padding: 20px; 
+            border-radius: 15px; margin-bottom: 30px; position: relative; 
+            animation: slideUp 0.4s ease;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        input, select { 
+            width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; 
+            border: 1px solid var(--glass-border); background: rgba(0,0,0,0.7); 
+            color: white; box-sizing: border-box; font-family: 'Montserrat';
+        }
+
+        .btn-main { 
+            width: 100%; padding: 14px; border-radius: 8px; border: none; 
+            font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 10px; 
+        }
+        .btn-save { background: var(--accent); color: black; }
         .btn-add { background: white; color: black; margin-bottom: 20px; }
-        .btn-del { position: absolute; top: -10px; right: -10px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
-        .img-container { width: 100%; height: 150px; background: #111; border-radius: 10px; margin: 10px 0; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--glass-border); }
+        .btn-del { 
+            position: absolute; top: -10px; right: -10px; background: #ff4444; 
+            color: white; border: none; border-radius: 50%; width: 32px; height: 32px; 
+            cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Contenedor de Imagen */
+        .img-container { 
+            width: 100%; height: 180px; background: #111; border-radius: 10px; 
+            margin: 10px 0; overflow: hidden; display: flex; 
+            align-items: center; justify-content: center; border: 1px solid var(--glass-border); 
+        }
         .img-prev { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Estilos Agenda */
+        .reserva-card { border-left: 5px solid var(--accent); }
+        .reserva-nombre { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; color: white; }
+        .reserva-info { font-size: 0.9rem; margin: 5px 0; opacity: 0.9; }
+        .btn-wa { 
+            display: inline-block; background: #25D366; color: black; 
+            padding: 8px 15px; border-radius: 5px; text-decoration: none; 
+            font-weight: 700; font-size: 0.8rem; margin-top: 10px;
+        }
+
+        .status-msg { font-size: 0.75rem; text-align: center; color: var(--accent); height: 15px; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="nav-tabs">
-    <button class="btn-main" style="width:auto; background:none; color:white;" onclick="location.reload()">REFRESCAR DATOS</button>
+    <button class="tab-btn active" onclick="showTab('servicios')">Servicios</button>
+    <button class="tab-btn" onclick="showTab('agenda')">Agenda</button>
 </div>
 
-<div class="container">
-    <button class="btn-main btn-add" onclick="nuevoS()">+ NUEVO SERVICIO / PRODUCTO</button>
-    <div id="precios-lista"></div>
+<div id="tab-servicios" class="container">
+    <button class="btn-main btn-add" onclick="nuevoServicio()">+ AGREGAR NUEVO SERVICIO</button>
+    <div id="lista-servicios"></div>
+</div>
+
+<div id="tab-agenda" class="container hidden">
+    <h3 style="text-align: center; letter-spacing: 2px;">CLIENTAS AGENDADAS</h3>
+    <div id="lista-reservas"></div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
     import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
     const firebaseConfig = {
@@ -51,91 +119,155 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const storage = getStorage(app);
-    let localS = [];
+    let localServices = [];
 
-    // Opciones de imágenes predefinidas
-    const predefinidas = [
-        { nombre: "Personalizada / Subir propia", archivo: "" },
-        { nombre: "Clásicas", archivo: "clasicas.jpg" },
-        { nombre: "Volumen 3D", archivo: "3d.jpg" },
-        { nombre: "Volumen 4D", archivo: "4d.jpg" },
-        { nombre: "Volumen 5D", archivo: "5d.jpg" }
+    // Opciones de imágenes locales que ya tienes
+    const imagenesFijas = [
+        { label: "Seleccionar Foto...", value: "" },
+        { label: "Efecto Clásicas", value: "clasicas.jpg" },
+        { label: "Volumen 3D", value: "3d.jpg" },
+        { label: "Volumen 4D", value: "4d.jpg" },
+        { label: "Volumen 5D", value: "5d.jpg" }
     ];
 
+    // Cambio de Pestañas
+    window.showTab = (tab) => {
+        document.getElementById('tab-servicios').classList.add('hidden');
+        document.getElementById('tab-agenda').classList.add('hidden');
+        document.getElementById('tab-'+tab).classList.remove('hidden');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    };
+
+    // --- LÓGICA DE SERVICIOS ---
+
+    // Cargar datos actuales
     onValue(ref(db, 'precios'), (snap) => {
-        localS = snap.val() || [];
-        renderS();
+        localServices = snap.val() || [];
+        renderServicios();
     }, { onlyOnce: true });
 
-    window.renderS = () => {
-        const div = document.getElementById('precios-lista');
+    window.renderServicios = () => {
+        const div = document.getElementById('lista-servicios');
         div.innerHTML = "";
-        localS.forEach((s, i) => {
-            // Generar opciones del selector
-            let opcionesHTML = predefinidas.map(p => 
-                `<option value="${p.archivo}" ${s.img === p.archivo ? 'selected' : ''}>${p.nombre}</option>`
+        localServices.forEach((s, i) => {
+            let optionsHTML = imagenesFijas.map(img => 
+                `<option value="${img.value}" ${s.img === img.value ? 'selected' : ''}>${img.label}</option>`
             ).join('');
 
             div.innerHTML += `
                 <div class="card">
-                    <button class="btn-del" onclick="delS(${i})">&times;</button>
+                    <button class="btn-del" onclick="eliminarServicio(${i})">&times;</button>
                     
-                    <label style="font-size:0.7rem;">NOMBRE DEL SERVICIO</label>
-                    <input type="text" value="${s.n || ''}" oninput="localS[${i}].n = this.value">
+                    <label style="font-size:0.7rem; opacity:0.6">NOMBRE DEL TRABAJO</label>
+                    <input type="text" value="${s.n || ''}" oninput="localServices[${i}].n = this.value">
                     
-                    <label style="font-size:0.7rem;">PRECIO ($)</label>
-                    <input type="number" value="${s.p || 0}" oninput="localS[${i}].p = this.value">
+                    <label style="font-size:0.7rem; opacity:0.6">PRECIO ($)</label>
+                    <input type="number" value="${s.p || 0}" oninput="localServices[${i}].p = this.value">
                     
-                    <label style="font-size:0.7rem;">SELECCIONAR IMAGEN</label>
-                    <select onchange="seleccionarImagen(${i}, this.value)">
-                        ${opcionesHTML}
-                        ${(s.img && !predefinidas.find(p=>p.archivo===s.img)) ? `<option value="${s.img}" selected>Imagen subida actualmente</option>` : ''}
+                    <label style="font-size:0.7rem; opacity:0.6">ELEGIR FOTO DE ARCHIVO</label>
+                    <select onchange="cambiarFotoPredefinida(${i}, this.value)">
+                        ${optionsHTML}
+                        ${(s.img && !imagenesFijas.find(f => f.value === s.img)) ? `<option value="${s.img}" selected>Foto personalizada activa</option>` : ''}
                     </select>
 
-                    <div style="font-size:0.7rem; margin-top:5px; opacity:0.6;">O SUBIR UNA NUEVA:</div>
-                    <input type="file" accept="image/*" onchange="subirNuevaImg(${i}, this)">
+                    <div style="font-size:0.7rem; margin-top:5px; opacity:0.6;">O SUBIR JPG DESDE CELULAR:</div>
+                    <input type="file" accept="image/*" onchange="subirFotoNueva(${i}, this)">
 
                     <div class="img-container">
-                        <img src="${s.img || '200025.jpg'}" class="img-prev" id="img-prev-${i}">
+                        <img src="${s.img || 'clasicas.jpg'}" class="img-prev" id="img-prev-${i}" onerror="this.src='200025.jpg'">
                     </div>
 
-                    <button class="btn-main btn-save" onclick="guardarTodo()">GUARDAR Y PUBLICAR</button>
-                    <div id="status-${i}" style="font-size:0.7rem; text-align:center; margin-top:5px;"></div>
+                    <button class="btn-main btn-save" onclick="guardarCambios()">ACTUALIZAR CATÁLOGO</button>
+                    <div id="status-${i}" class="status-msg"></div>
                 </div>`;
         });
     }
 
-    window.seleccionarImagen = (i, valor) => {
-        if(valor !== "") {
-            localS[i].img = valor;
-            document.getElementById(`img-prev-${i}`).src = valor;
+    window.cambiarFotoPredefinida = (i, val) => {
+        if(val !== "") {
+            localServices[i].img = val;
+            document.getElementById(`img-prev-${i}`).src = val;
         }
     };
 
-    window.subirNuevaImg = async (i, input) => {
+    window.subirFotoNueva = async (i, input) => {
         const file = input.files[0];
         if(!file) return;
         const status = document.getElementById(`status-${i}`);
-        status.innerText = "Subiendo archivo...";
+        status.innerText = "Subiendo imagen...";
 
         try {
-            const storageRef = sRef(storage, `fotos/img_${Date.now()}`);
+            const path = `galeria/img_${Date.now()}.jpg`;
+            const storageRef = sRef(storage, path);
             const snap = await uploadBytes(storageRef, file);
             const url = await getDownloadURL(snap.ref);
-            localS[i].img = url;
+            
+            localServices[i].img = url;
             document.getElementById(`img-prev-${i}`).src = url;
             status.innerText = "¡Imagen lista!";
         } catch (e) {
             status.innerText = "Error al subir";
+            console.error(e);
         }
     };
 
-    window.guardarTodo = () => {
-        set(ref(db, 'precios'), localS).then(() => alert("¡Catálogo actualizado para clientes!"));
+    window.guardarCambios = () => {
+        set(ref(db, 'precios'), localServices).then(() => {
+            alert("¡Todo guardado! Las clientas ya pueden ver los cambios.");
+        });
     };
 
-    window.nuevoS = () => { localS.push({n:'', p:0, img:'clasicas.jpg'}); renderS(); };
-    window.delS = (i) => { if(confirm("¿Borrar?")) { localS.splice(i,1); guardarTodo(); renderS(); } };
+    window.nuevoServicio = () => {
+        localServices.push({ n: '', p: 0, img: 'clasicas.jpg' });
+        renderServicios();
+    };
+
+    window.eliminarServicio = (i) => {
+        if(confirm("¿Estás segura de borrar este servicio?")) {
+            localServices.splice(i, 1);
+            set(ref(db, 'precios'), localServices).then(renderServicios);
+        }
+    };
+
+    // --- LÓGICA DE AGENDA (RECIBIR RESERVAS) ---
+    onValue(ref(db, 'reservas'), (snap) => {
+        const data = snap.val();
+        const contenedor = document.getElementById('lista-reservas');
+        contenedor.innerHTML = "";
+
+        if(!data) {
+            contenedor.innerHTML = "<p style='text-align:center; opacity:0.5;'>No hay clientas agendadas todavía.</p>";
+            return;
+        }
+
+        // Ordenar por las más recientes primero
+        const lista = Object.keys(data).reverse();
+
+        lista.forEach(key => {
+            const r = data[key];
+            contenedor.innerHTML += `
+                <div class="card reserva-card">
+                    <button class="btn-del" onclick="borrarReserva('${key}')">&times;</button>
+                    <div class="reserva-nombre">${r.nombre}</div>
+                    <div class="reserva-info">
+                        <i class="fas fa-eye"></i> Servicio: <b>${r.servicio}</b><br>
+                        <i class="fas fa-dollar-sign"></i> Precio: <b>$${r.precio}</b><br>
+                        <i class="fas fa-phone"></i> WhatsApp: ${r.tel}
+                    </div>
+                    <a href="https://wa.me/${r.tel.replace(/\D/g,'')}" target="_blank" class="btn-wa">
+                        <i class="fab fa-whatsapp"></i> CONTACTAR AHORA
+                    </a>
+                </div>`;
+        });
+    });
+
+    window.borrarReserva = (key) => {
+        if(confirm("¿Eliminar a esta clienta de la lista?")) {
+            remove(ref(db, `reservas/${key}`));
+        }
+    };
+
 </script>
 </body>
 </html>
