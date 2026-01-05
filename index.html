@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MASTER ADMIN | Lashista</title>
+    <title id="admin-title">ADMIN | Lashista</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -31,6 +31,12 @@
 </div>
 
 <div id="tab-servicios" class="container">
+    <div class="card" style="border: 1px solid gold;">
+        <label style="font-size: 0.7rem; color: gold;">NOMBRE DE TU NEGOCIO</label>
+        <input type="text" id="app-name-input" placeholder="Ej: LASHISTA STUDIO">
+        <button class="btn-main" style="background: gold; color: black; font-size: 0.7rem; padding: 10px;" onclick="saveAppName()">ACTUALIZAR NOMBRE</button>
+    </div>
+    
     <button class="btn-main btn-add" onclick="nuevoS()">+ AGREGAR SERVICIO</button>
     <div id="lista-precios"></div>
 </div>
@@ -65,6 +71,18 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     };
 
+    // --- NOMBRE DE LA APP ---
+    onValue(ref(db, 'config/appName'), (snap) => {
+        const name = snap.val() || "LASHISTA";
+        document.getElementById('app-name-input').value = name;
+        document.getElementById('admin-title').innerText = "ADMIN | " + name;
+    });
+
+    window.saveAppName = () => {
+        const newName = document.getElementById('app-name-input').value;
+        set(ref(db, 'config/appName'), newName).then(() => alert("Nombre actualizado"));
+    };
+
     // --- SERVICIOS ---
     onValue(ref(db, 'precios'), (snap) => {
         localS = snap.val() || [];
@@ -85,7 +103,7 @@
     window.nuevoS = () => { localS.push({n:'', p:0}); save(); };
     window.delS = (i) => { if(confirm("¿Borrar servicio?")) { localS.splice(i,1); save(); } };
 
-    // --- AGENDA (BOTÓN BORRAR CORREGIDO) ---
+    // --- AGENDA ---
     onValue(ref(db, 'reservas'), (snap) => {
         const data = snap.val();
         const cont = document.getElementById('lista-reservas');
@@ -101,14 +119,11 @@
                 <span style="color:var(--accent)">${r.fecha} a las ${r.hora}hs</span><br>
                 <a href="https://wa.me/${r.tel}" target="_blank" style="color:white; text-decoration:none; font-size:0.8rem; border:1px solid white; padding:5px; border-radius:5px; display:inline-block; margin-top:10px;">WhatsApp</a>
             `;
-            
-            // Acción real de borrar conectada a Firebase
             card.querySelector('.btn-del').onclick = () => {
                 if(confirm("¿Cancelar reserva de " + r.nombre + "?")) {
                     remove(ref(db, 'reservas/' + key));
                 }
             };
-            
             cont.appendChild(card);
         });
     });
