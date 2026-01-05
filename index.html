@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --glass: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --accent: #25D366; }
+        :root { --glass: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --accent: #25D366; --gold: gold; }
         body { margin: 0; font-family: 'Montserrat', sans-serif; background: #000 url('200025.jpg') center/cover fixed; color: white; }
         .nav { display: flex; justify-content: center; gap: 20px; padding: 20px; background: rgba(0,0,0,0.9); position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--glass-border); }
         .tab-btn { background: none; border: none; color: white; opacity: 0.5; cursor: pointer; font-weight: 700; text-transform: uppercase; padding: 10px; }
@@ -16,8 +16,9 @@
         .card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; margin-bottom: 20px; position: relative; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white; box-sizing: border-box; }
         .btn-main { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; text-transform: uppercase; }
-        .btn-save { background: var(--accent); color: black; margin-top: 10px; }
-        .btn-add { background: white; color: black; margin-bottom: 20px; }
+        .btn-save { background: rgba(255,255,255,0.2); color: white; margin-top: 10px; font-size: 0.7rem; border: 1px solid white; }
+        .btn-publish { background: var(--accent); color: black; margin-bottom: 20px; box-shadow: 0 0 15px var(--accent); }
+        .btn-add { background: white; color: black; margin-bottom: 10px; }
         .btn-del { position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; z-index: 10; font-weight: bold;}
         .hidden { display: none !important; }
         .reserva { border-left: 4px solid var(--accent); }
@@ -31,13 +32,15 @@
 </div>
 
 <div id="tab-servicios" class="container">
-    <div class="card" style="border: 1px solid gold;">
-        <label style="font-size: 0.7rem; color: gold;">NOMBRE DE TU NEGOCIO</label>
+    <div class="card" style="border: 1px solid var(--gold);">
+        <label style="font-size: 0.7rem; color: var(--gold);">NOMBRE DE TU NEGOCIO</label>
         <input type="text" id="app-name-input" placeholder="Ej: LASHISTA STUDIO">
-        <button class="btn-main" style="background: gold; color: black; font-size: 0.7rem; padding: 10px;" onclick="saveAppName()">ACTUALIZAR NOMBRE</button>
+        <button class="btn-main" style="background: var(--gold); color: black; font-size: 0.7rem; padding: 10px;" onclick="saveAppName()">ACTUALIZAR NOMBRE</button>
     </div>
+
+    <button class="btn-main btn-publish" onclick="publicarAhora()">🚀 PUBLICAR EN LA WEB</button>
     
-    <button class="btn-main btn-add" onclick="nuevoS()">+ AGREGAR SERVICIO</button>
+    <button class="btn-main btn-add" onclick="nuevoS()">+ AGREGAR NUEVO SERVICIO</button>
     <div id="lista-precios"></div>
 </div>
 
@@ -62,7 +65,7 @@
 
     const app = initializeApp(config);
     const db = getDatabase(app);
-    let localS = [];
+    let borradores = [];
 
     window.showTab = (t) => {
         document.getElementById('tab-servicios').classList.add('hidden');
@@ -71,39 +74,44 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     };
 
-    // --- NOMBRE DE LA APP ---
+    // 1. Manejo del Nombre
     onValue(ref(db, 'config/appName'), (snap) => {
         const name = snap.val() || "LASHISTA";
         document.getElementById('app-name-input').value = name;
         document.getElementById('admin-title').innerText = "ADMIN | " + name;
     });
+    window.saveAppName = () => set(ref(db, 'config/appName'), document.getElementById('app-name-input').value);
 
-    window.saveAppName = () => {
-        const newName = document.getElementById('app-name-input').value;
-        set(ref(db, 'config/appName'), newName).then(() => alert("Nombre actualizado"));
-    };
-
-    // --- SERVICIOS ---
-    onValue(ref(db, 'precios'), (snap) => {
-        localS = snap.val() || [];
+    // 2. Manejo de Servicios (Borrador)
+    onValue(ref(db, 'borrador_precios'), (snap) => {
+        borradores = snap.val() || [];
         const div = document.getElementById('lista-precios');
         div.innerHTML = "";
-        localS.forEach((s, i) => {
+        borradores.forEach((s, i) => {
             div.innerHTML += `
                 <div class="card">
                     <button class="btn-del" onclick="delS(${i})">×</button>
-                    <input type="text" value="${s.n}" placeholder="Nombre" oninput="localS[${i}].n=this.value">
-                    <input type="number" value="${s.p}" placeholder="Precio" oninput="localS[${i}].p=this.value">
-                    <button class="btn-main btn-save" onclick="save()">GUARDAR CAMBIOS</button>
+                    <input type="text" value="${s.n}" placeholder="Nombre" oninput="borradores[${i}].n=this.value">
+                    <input type="number" value="${s.p}" placeholder="Precio" oninput="borradores[${i}].p=this.value">
+                    <button class="btn-main btn-save" onclick="saveBorrador()">GUARDAR CAMBIO LOCAL</button>
                 </div>`;
         });
     });
 
-    window.save = () => set(ref(db, 'precios'), localS).then(() => alert("Sincronizado"));
-    window.nuevoS = () => { localS.push({n:'', p:0}); save(); };
-    window.delS = (i) => { if(confirm("¿Borrar servicio?")) { localS.splice(i,1); save(); } };
+    window.saveBorrador = () => set(ref(db, 'borrador_precios'), borradores);
+    window.nuevoS = () => { borradores.push({n:'', p:0}); window.saveBorrador(); };
+    window.delS = (i) => { if(confirm("¿Borrar?")) { borradores.splice(i,1); window.saveBorrador(); } };
 
-    // --- AGENDA ---
+    // 3. LA CLAVE: PUBLICAR
+    window.publicarAhora = () => {
+        if(confirm("¿Quieres que los clientes vean estos productos y precios ahora mismo?")) {
+            set(ref(db, 'precios_publicos'), borradores).then(() => {
+                alert("¡WEB ACTUALIZADA EXITOSAMENTE!");
+            });
+        }
+    };
+
+    // 4. Agenda
     onValue(ref(db, 'reservas'), (snap) => {
         const data = snap.val();
         const cont = document.getElementById('lista-reservas');
@@ -112,18 +120,8 @@
             const r = data[key];
             const card = document.createElement('div');
             card.className = 'card reserva';
-            card.innerHTML = `
-                <button class="btn-del">×</button>
-                <b>${r.nombre}</b><br>
-                <span>${r.servicio} ($${r.precio})</span><br>
-                <span style="color:var(--accent)">${r.fecha} a las ${r.hora}hs</span><br>
-                <a href="https://wa.me/${r.tel}" target="_blank" style="color:white; text-decoration:none; font-size:0.8rem; border:1px solid white; padding:5px; border-radius:5px; display:inline-block; margin-top:10px;">WhatsApp</a>
-            `;
-            card.querySelector('.btn-del').onclick = () => {
-                if(confirm("¿Cancelar reserva de " + r.nombre + "?")) {
-                    remove(ref(db, 'reservas/' + key));
-                }
-            };
+            card.innerHTML = `<button class="btn-del">×</button><b>${r.nombre}</b><br><span>${r.servicio} ($${r.precio})</span><br><span style="color:var(--accent)">${r.fecha} - ${r.hora}hs</span><br><a href="https://wa.me/${r.tel}" target="_blank" style="color:white; text-decoration:none; font-size:0.8rem; border:1px solid white; padding:5px; border-radius:5px; display:inline-block; margin-top:10px;">WhatsApp</a>`;
+            card.querySelector('.btn-del').onclick = () => { if(confirm("¿Borrar?")) remove(ref(db, 'reservas/' + key)); };
             cont.appendChild(card);
         });
     });
